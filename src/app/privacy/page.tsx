@@ -38,34 +38,27 @@ export default function PrivacyPage() {
         </div>
 
         <div>
-          <h2 className="font-display text-xl font-medium">Calling or writing to us</h2>
+          <h2 className="font-display text-xl font-medium">Calling, writing, or filling out a form</h2>
           <p className="mt-3 text-ink-soft">
             The phone number and email address on this site open your own phone or mail
             application. Tapping either link does not send anything to us by itself and this
             site never sees the contents. If you go on to call or write, whatever you say is
             between you and Todd, kept only as long as an ordinary business conversation needs
-            to be, and never sold or passed to anyone else.
+            to be, and never sold or passed to anyone else. There is no contact form on this
+            site, so there is nowhere on it for us to store anything you might have typed.
           </p>
         </div>
+      </div>
 
-        <div>
-          <h2 className="font-display text-xl font-medium">Forms</h2>
-          <p className="mt-3 text-ink-soft">
-            There is no contact form on this site. Nothing you type here is stored, because
-            there is nowhere on this site to type it.
-          </p>
-        </div>
-
-        <div>
-          <h2 className="font-display text-xl font-medium">Questions</h2>
-          <p className="mt-3 text-ink-soft">
-            Write to{" "}
-            <a href={`mailto:${email}`} className="tap-target" style={{ color: "var(--color-accent)" }}>
-              {email}
-            </a>{" "}
-            with any question about this policy. Our mailing address is {mailingAddress}.
-          </p>
-        </div>
+      <div className="mt-16 grid gap-6 border-t border-line pt-10 md:grid-cols-[1fr_2fr] md:gap-10">
+        <h2 className="font-display text-xl font-medium">Questions</h2>
+        <p className="max-w-[48ch] text-lg text-ink-soft">
+          Write to{" "}
+          <a href={`mailto:${email}`} className="tap-target" style={{ color: "var(--color-accent)" }}>
+            {email}
+          </a>{" "}
+          with any question about this policy. Our mailing address is {mailingAddress}.
+        </p>
       </div>
     </div>
   );
