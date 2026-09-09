@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Every project T.R. Fox Contracting has on record: Manhattan residences, Nassau County residences, and commercial and installation work.",
   openGraph: {
-    title: "Work — T.R. Fox Contracting",
+    title: "Work, T.R. Fox Contracting",
     description:
       "Every project T.R. Fox Contracting has on record: Manhattan residences, Nassau County residences, and commercial and installation work.",
   },

@@ -1,9 +1,36 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ProjectEntry from "@/components/ProjectEntry";
 import { projects } from "@/data/projects";
 import { press } from "@/data/press";
-import { phone, phoneHref, email, emailHref } from "@/data/firm";
+import { phone, phoneHref, email, emailHref, foundingYear } from "@/data/firm";
+
+const siteUrl = "https://trfoxcontracting.com";
+
+export const metadata: Metadata = {
+  title: "T.R. Fox Contracting",
+  description:
+    "High-end residential interiors in Manhattan. Two or three projects a year, run by Todd Fox himself.",
+  openGraph: {
+    title: "T.R. Fox Contracting",
+    description:
+      "High-end residential interiors in Manhattan. Two or three projects a year, run by Todd Fox himself.",
+    url: siteUrl,
+    type: "website",
+  },
+};
+
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "T.R. Fox Contracting",
+  telephone: phone,
+  email,
+  areaServed: "New York, NY",
+  foundingDate: String(foundingYear),
+  url: siteUrl,
+};
 
 const selectedIds = [
   "lincoln-square",
@@ -21,6 +48,10 @@ const selectedWork = selectedIds
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
       {/* Hero */}
       <section className="relative">
         <picture>

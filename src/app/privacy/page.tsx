@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "What this site does and does not do with your information. It collects nothing beyond basic hosting analytics.",
   openGraph: {
-    title: "Privacy — T.R. Fox Contracting",
+    title: "Privacy, T.R. Fox Contracting",
     description:
       "What this site does and does not do with your information. It collects nothing beyond basic hosting analytics.",
   },

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description:
     "Todd Fox started T.R. Fox Contracting in 2003. Fourth-generation builder, small permanent crew, a deliberate ceiling of two or three projects at a time.",
   openGraph: {
-    title: "About — T.R. Fox Contracting",
+    title: "About, T.R. Fox Contracting",
     description:
       "Todd Fox started T.R. Fox Contracting in 2003. Fourth-generation builder, small permanent crew, a deliberate ceiling of two or three projects at a time.",
   },

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Schibsted_Grotesk, Newsreader } from "next/font/google";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import { CANVAS_HEX } from "@/lib/theme";
 import "./globals.css";
 
 const schibstedGrotesk = Schibsted_Grotesk({
@@ -17,16 +18,13 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: "T.R. Fox Contracting",
-    template: "%s — T.R. Fox Contracting",
-  },
+  title: "T.R. Fox Contracting",
   description:
     "High-end residential interiors in Manhattan. Two or three projects a year, run by Todd Fox himself.",
 };
 
 export const viewport = {
-  themeColor: "#E9E7E2",
+  themeColor: CANVAS_HEX,
 };
 
 export default function RootLayout({

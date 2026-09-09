@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Call or write to T.R. Fox Contracting. Todd Fox answers his own phone. New York, NY, by appointment.",
   openGraph: {
-    title: "Contact — T.R. Fox Contracting",
+    title: "Contact, T.R. Fox Contracting",
     description:
       "Call or write to T.R. Fox Contracting. Todd Fox answers his own phone. New York, NY, by appointment.",
   },
