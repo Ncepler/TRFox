@@ -3,11 +3,11 @@ import ProjectEntry from "@/components/ProjectEntry";
 import { projects, type Project } from "@/data/projects";
 
 export const metadata: Metadata = {
-  title: "Work",
+  title: "Projects",
   description:
     "Every project T.R. Fox Contracting has on record: Manhattan residences, Nassau County residences, and commercial and installation work.",
   openGraph: {
-    title: "Work, T.R. Fox Contracting",
+    title: "Projects, T.R. Fox Contracting",
     description:
       "Every project T.R. Fox Contracting has on record: Manhattan residences, Nassau County residences, and commercial and installation work.",
   },
@@ -19,10 +19,10 @@ const groups: { key: Project["group"]; heading: string }[] = [
   { key: "commercial", heading: "Commercial and installations" },
 ];
 
-export default function WorkPage() {
+export default function ProjectsPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-16 md:px-10 md:py-24">
-      <h1 className="font-display text-4xl font-medium tracking-[-0.03em] md:text-5xl">Work</h1>
+      <h1 className="font-display text-4xl font-medium tracking-[-0.03em] md:text-5xl">Projects</h1>
 
       {groups.map((group) => {
         const entries = projects.filter((p) => p.group === group.key);

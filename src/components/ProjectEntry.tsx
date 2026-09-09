@@ -1,4 +1,3 @@
-import DimensionLine from "@/components/DimensionLine";
 import type { Project } from "@/data/projects";
 
 export default function ProjectEntry({ project }: { project: Project }) {
@@ -15,7 +14,11 @@ export default function ProjectEntry({ project }: { project: Project }) {
           {project.year}
         </p>
       )}
-      {project.sf ? <DimensionLine sf={project.sf} className="mt-4" /> : null}
+      {project.sf ? (
+        <p className="mt-2 font-display text-[0.8125rem] font-medium text-ink-soft">
+          {project.sf.toLocaleString("en-US")} sf
+        </p>
+      ) : null}
     </div>
   );
 }

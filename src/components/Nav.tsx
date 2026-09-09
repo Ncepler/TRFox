@@ -1,11 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const links = [
-  { href: "/work", label: "Work" },
+  { href: "/projects", label: "Projects" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
@@ -13,12 +14,46 @@ const links = [
 export default function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // Solid by default: only the home page's hero section can put the nav into
+  // the transparent "over the hero" state, so every other route starts (and
+  // stays) solid.
+  const [overHero, setOverHero] = useState(false);
+
+  useEffect(() => {
+    const hero = document.getElementById("hero");
+    if (!hero) {
+      setOverHero(false);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setOverHero(entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, [pathname]);
 
   return (
-    <header className="border-b border-line">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5 md:px-10">
-        <Link href="/" className="font-display text-lg font-medium tap-target">
-          T.R. Fox Contracting
+    <header
+      className={`fixed inset-x-0 top-0 z-50 h-20 transition-colors duration-200 ${
+        overHero
+          ? "border-b border-transparent bg-transparent"
+          : "border-b border-line bg-canvas"
+      }`}
+    >
+      <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-6 md:px-10">
+        <Link href="/" className="tap-target">
+          <Image
+            src="/text-logo.png"
+            alt="T.R. Fox Contracting"
+            width={140}
+            height={32}
+            priority
+          />
         </Link>
 
         <nav aria-label="Primary" className="hidden md:block">
@@ -44,6 +79,7 @@ export default function Nav() {
         <button
           type="button"
           className="tap-target font-display text-sm md:hidden"
+          style={overHero ? { filter: "drop-shadow(0 1px 3px var(--color-ink))" } : undefined}
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}
@@ -53,7 +89,11 @@ export default function Nav() {
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="Primary" className="md:hidden">
+        <nav
+          id="mobile-nav"
+          aria-label="Primary"
+          className="absolute inset-x-0 top-full border-b border-line bg-canvas md:hidden"
+        >
           <ul className="flex flex-col gap-1 px-6 pb-5 font-display text-sm">
             {links.map((link) => {
               const active = pathname === link.href;

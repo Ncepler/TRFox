@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Schibsted_Grotesk, Newsreader } from "next/font/google";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import BackgroundTexture from "@/components/BackgroundTexture";
 import { CANVAS_HEX } from "@/lib/theme";
 import "./globals.css";
 
@@ -20,7 +21,7 @@ const newsreader = Newsreader({
 export const metadata: Metadata = {
   title: "T.R. Fox Contracting",
   description:
-    "High-end residential interiors in Manhattan. Two or three projects a year, run by Todd Fox himself.",
+    "Full-service general contracting and construction management for high-end residential interiors in Manhattan.",
 };
 
 export const viewport = {
@@ -35,14 +36,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${schibstedGrotesk.variable} ${newsreader.variable} font-body antialiased`}>
+        <BackgroundTexture />
         <a
           href="#main"
-          className="fixed left-2 top-2 -translate-y-20 focus:translate-y-0 z-50 bg-canvas px-4 py-2 font-display text-sm transition-transform"
+          className="fixed left-2 top-2 -translate-y-20 focus:translate-y-0 z-[60] bg-canvas px-4 py-2 font-display text-sm transition-transform"
         >
           Skip to content
         </a>
         <Nav />
-        <main id="main" tabIndex={-1}>
+        <main id="main" tabIndex={-1} className="pt-20">
           {children}
         </main>
         <Footer />

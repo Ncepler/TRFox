@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Todd Fox started T.R. Fox Contracting in 2003. Fourth-generation builder, small permanent crew, a deliberate ceiling of two or three projects at a time.",
+    "Full-service general contracting and construction management, tailored to each project's goals.",
   openGraph: {
     title: "About, T.R. Fox Contracting",
     description:
-      "Todd Fox started T.R. Fox Contracting in 2003. Fourth-generation builder, small permanent crew, a deliberate ceiling of two or three projects at a time.",
+      "Full-service general contracting and construction management, tailored to each project's goals.",
   },
 };
 
@@ -20,59 +20,23 @@ export default function AboutPage() {
         </h1>
         <div className="mt-10 max-w-[62ch] space-y-6 text-lg">
           <p>
-            Todd Fox is the fourth generation of his family to build for a living. He started
-            T.R. Fox Contracting in 2003 and has run it the same way since: a small permanent
-            crew, a subcontractor network he has worked with for years, and a deliberate ceiling
-            of two or three projects at a time.
+            T.R. Fox Contracting, Inc. is a full service general contracting and construction
+            management firm, dedicated to tailoring our capabilities and practice to your
+            specific project goals. With over 10 years of experience in the industry, and a
+            strong focus on personal relationships with our clients, we pride ourselves on being
+            able to execute the most complicated of projects, without sacrificing the finest of
+            details, which are the distinction of every design.
           </p>
           <p>
-            The ceiling is the point. It is what makes it possible for one person to be on every
-            site every day, to question a detail on a drawing before it becomes a problem in a
-            wall, and to know a building well enough to come back to it years later.
+            We find great value in becoming involved at the inception of a project. Over the
+            years we have worked with some of the most exceptional architects and designers in
+            the city, consistently satisfying their expectations. Repeat business has allowed us
+            the opportunity to collaborate with architects, designers, and/ or clients, in order
+            to streamline the delivery of a project while providing comprehensive construction
+            management services. We firmly believe that the preconstruction process is just as
+            critical as the construction phase, as there is no substitute for proper planning.
           </p>
-          <p>
-            The work is high-end residential interiors, mostly gut renovations of prewar
-            apartments, penthouses and lofts in Manhattan. Marble slab bathrooms, custom millwork,
-            structural work, roof decks, home automation, specialty finishes. Complicated projects
-            where the details are the design.
-          </p>
-          <p>Most of it comes through architects and interior designers who have used us before.</p>
         </div>
-      </section>
-
-      <section className="mt-20 border-t border-line pt-16 md:mt-28 md:pt-24">
-        <h2 className="font-display text-2xl font-medium tracking-[-0.03em] md:text-3xl">
-          Working with us
-        </h2>
-        <dl className="mt-10 grid gap-10 md:grid-cols-2 md:gap-x-12 md:gap-y-12">
-          <div>
-            <dt className="font-display text-lg font-medium">Before the drawings are final.</dt>
-            <dd className="mt-2 max-w-[48ch] text-ink-soft">
-              We price and plan a project while it can still change cheaply. Bringing a contractor
-              in at the end of design is how budgets get discovered rather than decided.
-            </dd>
-          </div>
-          <div>
-            <dt className="font-display text-lg font-medium">One person, on site.</dt>
-            <dd className="mt-2 max-w-[48ch] text-ink-soft">
-              Todd runs each job himself. You will not be handed to someone else after the
-              contract is signed.
-            </dd>
-          </div>
-          <div>
-            <dt className="font-display text-lg font-medium">We question the drawing.</dt>
-            <dd className="mt-2 max-w-[48ch] text-ink-soft">
-              If a detail is going to fail, the time to say so is before it is built, even when it
-              means a difficult conversation with a firm we respect.
-            </dd>
-          </div>
-          <div>
-            <dt className="font-display text-lg font-medium">We come back.</dt>
-            <dd className="mt-2 max-w-[48ch] text-ink-soft">
-              Maintenance visits years after handover are part of how we work, not a favor.
-            </dd>
-          </div>
-        </dl>
       </section>
     </div>
   );
