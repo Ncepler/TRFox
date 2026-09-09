@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --color-canvas: #E9E7E2;
-  --color-canvas-deep: #DEDBD4;
+  --color-canvas: #F3F3F3;
+  --color-canvas-deep: #E8E7E4;
   --color-ink: #191714;
   --color-ink-soft: #55504A;
   --color-line: #C9C4BB;

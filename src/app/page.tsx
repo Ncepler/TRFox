@@ -11,11 +11,11 @@ const siteUrl = "https://trfoxcontracting.com";
 export const metadata: Metadata = {
   title: "T.R. Fox Contracting",
   description:
-    "High-end residential interiors in Manhattan. Two or three projects a year, run by Todd Fox himself.",
+    "Full-service general contracting and construction management for high-end residential interiors in Manhattan.",
   openGraph: {
     title: "T.R. Fox Contracting",
     description:
-      "High-end residential interiors in Manhattan. Two or three projects a year, run by Todd Fox himself.",
+      "Full-service general contracting and construction management for high-end residential interiors in Manhattan.",
     url: siteUrl,
     type: "website",
   },
@@ -53,7 +53,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
       {/* Hero */}
-      <section className="relative">
+      <section id="hero" className="relative -mt-20">
         <picture>
           <source media="(min-width: 768px)" srcSet="/hero-desktop.jpg" />
           <Image
@@ -66,12 +66,13 @@ export default function Home() {
           />
         </picture>
         <div className="mx-auto max-w-5xl px-6 pb-16 pt-10 md:px-10">
-          <h1 className="max-w-[16ch] font-display text-4xl font-medium tracking-[-0.03em] md:text-6xl">
-            Two or three projects a year.
+          <h1 className="max-w-[20ch] font-display text-4xl font-medium tracking-[-0.03em] md:text-6xl">
+            Full-service general contracting, from the first walkthrough to the final coat of
+            paint.
           </h1>
           <p className="mt-6 max-w-[48ch] text-lg text-ink-soft md:text-xl">
-            T.R. Fox Contracting builds high-end residential interiors in Manhattan. Todd Fox is
-            on site every day of every one of them.
+            We work with architects and designers across Manhattan, most of them more than once,
+            and we&rsquo;re on site for the whole thing ourselves.
           </p>
           <Link
             href="/contact"
@@ -92,16 +93,16 @@ export default function Home() {
           <div className="max-w-[62ch] space-y-6 text-lg">
             <p>
               We want to be in the room before the drawings are final. Preconstruction is where a
-              project&rsquo;s budget and its schedule are actually decided, and a firm that shows
-              up after those are set is managing consequences instead of choices.
+              project&rsquo;s budget and its schedule get decided, and showing up after those are
+              set means managing consequences instead of choices.
             </p>
             <p>
-              Todd runs the site himself. Weekly meetings, daily calls, and one person who has the
-              whole project in his head. There is no account manager between you and the person
-              swinging the decisions.
+              Todd Fox runs the site himself, day to day, with a small crew and a subcontractor
+              network we&rsquo;ve worked with for years. Weekly meetings, daily calls, one person
+              who has the whole project in his head.
             </p>
             <p>
-              When a project is finished we do not disappear. Doors move, finishes settle,
+              When a project is finished we don&rsquo;t disappear. Doors move, finishes settle,
               buildings shift. We come back.
             </p>
           </div>
@@ -120,7 +121,7 @@ export default function Home() {
                 Twenty-three years of interiors, most of them within a few blocks of each other.
               </p>
             </div>
-            <Link href="/work" className="tap-target font-display text-sm" style={{ color: "var(--color-accent)" }}>
+            <Link href="/projects" className="tap-target font-display text-sm" style={{ color: "var(--color-accent)" }}>
               All projects
             </Link>
           </div>
@@ -157,11 +158,12 @@ export default function Home() {
       <section className="border-t border-line">
         <div className="mx-auto max-w-5xl px-6 py-16 md:px-10 md:py-24">
           <h2 className="max-w-[20ch] font-display text-2xl font-medium tracking-[-0.03em] md:text-3xl">
-            Three or four inquiries become a project each year.
+            Get in touch
           </h2>
           <p className="mt-6 max-w-[48ch] text-lg text-ink-soft">
-            If you are an architect or a designer with something coming up, or a homeowner whose
-            designer sent you here, call Todd directly.
+            If you&rsquo;re an architect or a designer with something coming together, or a
+            homeowner whose designer sent you here, reach out directly. We&rsquo;re glad to talk
+            through what you have in mind before anything is set in stone.
           </p>
           <div className="mt-8 flex flex-col gap-2 font-display text-lg">
             <a href={phoneHref} className="tap-target" style={{ color: "var(--color-accent)" }}>
