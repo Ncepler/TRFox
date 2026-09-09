@@ -46,14 +46,13 @@ export default function Nav() {
       }`}
     >
       <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-6 md:px-10">
-        <Link href="/" className="tap-target">
+        <Link href="/" className="tap-target -ml-3 md:-ml-4">
           <Image
             src="/text-logo.png"
             alt="T.R. Fox Contracting"
-            width={186}
-            height={109}
+            width={140}
+            height={32}
             priority
-            className="h-9 w-auto"
           />
         </Link>
 
