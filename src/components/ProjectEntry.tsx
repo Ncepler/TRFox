@@ -1,0 +1,21 @@
+import DimensionLine from "@/components/DimensionLine";
+import type { Project } from "@/data/projects";
+
+export default function ProjectEntry({ project }: { project: Project }) {
+  return (
+    <div className="max-w-[62ch]">
+      <p className="font-display text-xl font-medium tracking-[-0.03em] md:text-2xl">
+        {project.address}
+        {project.area ? <span className="text-ink-soft">, {project.area}</span> : null}
+      </p>
+      {(project.scope || project.year) && (
+        <p className="mt-2 text-ink-soft">
+          {project.scope}
+          {project.scope && project.year ? ", " : ""}
+          {project.year}
+        </p>
+      )}
+      {project.sf ? <DimensionLine sf={project.sf} className="mt-4" /> : null}
+    </div>
+  );
+}
