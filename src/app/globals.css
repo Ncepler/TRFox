@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #E9E7E2;
+  --color-canvas-deep: #DEDBD4;
+  --color-ink: #191714;
+  --color-ink-soft: #55504A;
+  --color-line: #C9C4BB;
+  --color-accent: #2E4A47;
+  --color-accent-hover: #233A37;
+
+  --font-display: var(--font-schibsted-grotesk), sans-serif;
+  --font-body: var(--font-newsreader), serif;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+@media (pointer: coarse) {
+  .tap-target {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Dimension line */
+.dimension-line {
+  padding-top: 0.5rem;
+}
+
+.dimension-rule-track {
+  position: relative;
+  height: 10px;
+}
+
+.dimension-rule {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dimension-tick {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1) 200ms;
+}
+
+.dimension-tick-start {
+  left: -1px;
+}
+
+.dimension-tick-end {
+  right: -1px;
+}
+
+.dimension-label {
+  opacity: 0;
+  transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1) 200ms;
+}
+
+.dimension-line.is-drawn .dimension-rule {
+  transform: scaleX(1);
+}
+
+.dimension-line.is-drawn .dimension-tick,
+.dimension-line.is-drawn .dimension-label {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dimension-rule {
+    transform: scaleX(1);
+    transition: none;
+  }
+
+  .dimension-tick,
+  .dimension-label {
+    opacity: 1;
+    transition: none;
+  }
+}
