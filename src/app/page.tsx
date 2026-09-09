@@ -58,28 +58,30 @@ export default function Home() {
           <source media="(min-width: 768px)" srcSet="/hero-desktop.jpg" />
           <Image
             src="/hero-mobile.jpg"
-            alt="A prewar Manhattan interior mid-renovation"
+            alt="A trowel finishing a plaster wall mid-renovation"
             width={1080}
             height={1350}
             priority
             className="h-[70vh] w-full object-cover md:h-[85vh]"
           />
         </picture>
-        <div className="mx-auto max-w-5xl px-6 pb-16 pt-10 md:px-10">
-          <h1 className="max-w-[16ch] font-display text-4xl font-medium tracking-[-0.03em] md:text-6xl">
-            Two or three projects a year.
-          </h1>
-          <p className="mt-6 max-w-[48ch] text-lg text-ink-soft md:text-xl">
-            T.R. Fox Contracting builds high-end residential interiors in Manhattan. Todd Fox is
-            on site every day of every one of them.
-          </p>
-          <Link
-            href="/contact"
-            className="tap-target mt-8 inline-block border-b border-accent font-display text-sm"
-            style={{ color: "var(--color-accent)" }}
-          >
-            Start a conversation
-          </Link>
+        <div className="absolute inset-0">
+          <div className="mx-auto h-full max-w-5xl px-6 pt-10 md:px-10 md:pt-16">
+            <h1 className="max-w-[16ch] font-display text-4xl font-medium tracking-[-0.03em] text-ink md:text-6xl">
+              Two or three projects a year.
+            </h1>
+            <p className="mt-6 max-w-[48ch] text-lg text-ink md:text-xl">
+              T.R. Fox Contracting builds high-end residential interiors in Manhattan. Todd Fox is
+              on site every day of every one of them.
+            </p>
+            <Link
+              href="/contact"
+              className="tap-target mt-8 inline-block border-b border-accent font-display text-sm"
+              style={{ color: "var(--color-accent)" }}
+            >
+              Start a conversation
+            </Link>
+          </div>
         </div>
       </section>
 
