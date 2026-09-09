@@ -1,4 +1,5 @@
 import type { Project } from "@/data/projects";
+import ProjectGallery from "@/components/ProjectGallery";
 
 export default function ProjectEntry({ project }: { project: Project }) {
   return (
@@ -19,6 +20,7 @@ export default function ProjectEntry({ project }: { project: Project }) {
           {project.sf.toLocaleString("en-US")} sf
         </p>
       ) : null}
+      <ProjectGallery project={project} />
     </div>
   );
 }
