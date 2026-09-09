@@ -50,9 +50,10 @@ export default function Nav() {
           <Image
             src="/text-logo.png"
             alt="T.R. Fox Contracting"
-            width={140}
-            height={32}
+            width={186}
+            height={109}
             priority
+            className="h-9 w-auto"
           />
         </Link>
 
