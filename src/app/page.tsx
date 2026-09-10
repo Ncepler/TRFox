@@ -68,17 +68,15 @@ export default function Home() {
         <div className="absolute inset-0">
           <div className="mx-auto h-full max-w-5xl px-6 pt-10 md:px-10 md:pt-16">
             <h1 className="max-w-[20ch] font-display text-4xl font-medium tracking-[-0.03em] text-ink md:text-6xl">
-              Full-service general contracting, from the first walkthrough to the final coat of
-              paint.
+              T.R. Fox Contracting
             </h1>
-            <p className="mt-6 max-w-[48ch] text-lg text-ink md:text-xl">
-              We work with architects and designers across Manhattan, most of them more than once,
-              and we&rsquo;re on site for the whole thing ourselves.
+            <p className="mt-6 max-w-[48ch] text-lg text-ink-soft md:text-xl">
+              General contracting and construction management, Manhattan since 2003.
             </p>
             <Link
               href="/contact"
-              className="tap-target mt-8 inline-block border-b border-accent font-display text-sm"
-              style={{ color: "var(--color-accent)" }}
+              className="tap-target mt-8 inline-block border-b font-display text-sm"
+              style={{ color: "#2F6B52", borderColor: "#2F6B52" }}
             >
               Start a conversation
             </Link>
