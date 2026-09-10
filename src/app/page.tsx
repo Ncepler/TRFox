@@ -85,8 +85,8 @@ export default function Home() {
               T.R. Fox Contracting
             </h1>
             <p className="mt-6 max-w-[48ch] text-lg text-ink md:text-xl">
-              We work with architects and designers across Manhattan, most of them more than once,
-              and we&rsquo;re on site for the whole thing ourselves.
+              We work with architects and designers across Manhattan. Most come back for the next
+              project.
             </p>
             <Link
               href="/contact"
