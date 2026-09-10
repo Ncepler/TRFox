@@ -29,9 +29,24 @@ export default function Nav() {
       return;
     }
 
+    // The observer's own first callback fires synchronously on observe(),
+    // reporting intersection at that exact instant. On some mobile browsers
+    // the address bar is still collapsing/expanding at that point, so the
+    // viewport used for that first measurement can be momentarily wrong,
+    // flipping overHero to false right after load even though we already
+    // know (from pathname, seeded above) that we start over the hero. Skip
+    // that first, redundant callback and only act on real changes from here.
+    let skippedFirstCallback = false;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setOverHero(entry.isIntersecting);
+        if (!skippedFirstCallback) {
+          skippedFirstCallback = true;
+          return;
+        }
+        // Belt and suspenders: never let a not-intersecting reading reveal
+        // the logo while we're still genuinely near the top of the page.
+        // Only a real scroll away from the hero should do that.
+        setOverHero(entry.isIntersecting || window.scrollY < 50);
       },
       { threshold: 0 }
     );

@@ -19,7 +19,13 @@ body {
 }
 
 @media (pointer: coarse) {
-  .tap-target {
+  /* :not(.hidden) matters: without it this rule's display:inline-flex beats
+     Tailwind's .hidden (display:none) on any element carrying both classes,
+     since both are single-class selectors and this one comes later in the
+     cascade. That silently kept the mobile nav logo visible on every real
+     touch device regardless of its "hidden" class, while working fine in
+     any test that didn't emulate a coarse pointer. */
+  .tap-target:not(.hidden) {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
