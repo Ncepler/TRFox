@@ -77,8 +77,7 @@ export default function Home() {
         <div className="relative -mt-[70vh] md:-mt-[85vh]">
           <div className="mx-auto max-w-5xl px-6 pb-16 pt-10 md:px-10 md:pb-20 md:pt-16">
             <h1 className="max-w-[20ch] font-display text-4xl font-medium tracking-[-0.03em] text-ink md:text-6xl">
-              Full-service general contracting, from the first walkthrough to the final coat of
-              paint.
+              T.R. Fox Contracting
             </h1>
             <p className="mt-6 max-w-[48ch] text-lg text-ink md:text-xl">
               We work with architects and designers across Manhattan, most of them more than once,
