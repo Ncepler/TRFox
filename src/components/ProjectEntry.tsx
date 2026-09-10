@@ -1,4 +1,5 @@
 import type { Project } from "@/data/projects";
+import ProjectGallery from "@/components/ProjectGallery";
 
 export default function ProjectEntry({ project }: { project: Project }) {
   return (
@@ -18,6 +19,14 @@ export default function ProjectEntry({ project }: { project: Project }) {
         <p className="mt-2 font-display text-[0.8125rem] font-medium text-ink-soft">
           {project.sf.toLocaleString("en-US")} sf
         </p>
+      ) : null}
+      {project.photoCount ? (
+        <ProjectGallery
+          slug={project.id}
+          address={project.address}
+          scope={project.scope}
+          photoCount={project.photoCount}
+        />
       ) : null}
     </div>
   );

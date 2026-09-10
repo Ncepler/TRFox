@@ -6,6 +6,8 @@ export type Project = {
   year?: number;
   scope: string;
   group: "manhattan" | "nassau" | "commercial";
+  /** Number of photos at /public/projects/<id>/01.jpg through NN.jpg. 0 when none exist. */
+  photoCount?: number;
 };
 
 export const projects: Project[] = [
@@ -18,6 +20,7 @@ export const projects: Project[] = [
     scope:
       "Complete interior renovation of a condominium. Marble slab bathrooms, custom finishes, millwork and flooring, central air conditioning",
     group: "manhattan",
+    photoCount: 10,
   },
   {
     id: "union-square-west",
@@ -27,6 +30,7 @@ export const projects: Project[] = [
     scope:
       "Duplex condominium. Spa room with steam shower, home automation, interior finishes",
     group: "manhattan",
+    photoCount: 9,
   },
   {
     id: "midtown",
@@ -36,6 +40,7 @@ export const projects: Project[] = [
     scope:
       "Complete interior renovation of a penthouse, including structural work and exterior roof decks",
     group: "manhattan",
+    photoCount: 19,
   },
   {
     id: "central-park-west",
@@ -44,6 +49,7 @@ export const projects: Project[] = [
     sf: 4000,
     scope: "Custom specialty paint finishes and audio/visual systems",
     group: "manhattan",
+    photoCount: 10,
   },
   {
     id: "central-park-west-68th",
@@ -52,6 +58,7 @@ export const projects: Project[] = [
     sf: 1200,
     scope: "Interior renovation",
     group: "manhattan",
+    photoCount: 6,
   },
   {
     id: "garment-district",
@@ -60,6 +67,7 @@ export const projects: Project[] = [
     sf: 2000,
     scope: "Complete interior renovation of a loft",
     group: "manhattan",
+    photoCount: 6,
   },
   {
     id: "79th-street",
@@ -68,6 +76,7 @@ export const projects: Project[] = [
     sf: 2000,
     scope: "Interior finishes",
     group: "manhattan",
+    photoCount: 4,
   },
   {
     id: "67th-street",
@@ -76,6 +85,7 @@ export const projects: Project[] = [
     sf: 1500,
     scope: "Two apartments combined into a single residence",
     group: "manhattan",
+    photoCount: 8,
   },
   {
     id: "15-central-park-west",
@@ -151,6 +161,7 @@ export const projects: Project[] = [
     area: "The Hamptons",
     scope: "",
     group: "commercial",
+    photoCount: 6,
   },
   {
     id: "woods-witt-dealy",

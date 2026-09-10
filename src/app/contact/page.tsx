@@ -4,11 +4,11 @@ import { phone, phoneHref, email, emailHref, locationLine } from "@/data/firm";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Call or write to T.R. Fox Contracting. Todd Fox answers his own phone. New York, NY, by appointment.",
+    "Call or write to T.R. Fox Contracting. New York, NY, by appointment.",
   openGraph: {
     title: "Contact, T.R. Fox Contracting",
     description:
-      "Call or write to T.R. Fox Contracting. Todd Fox answers his own phone. New York, NY, by appointment.",
+      "Call or write to T.R. Fox Contracting. New York, NY, by appointment.",
   },
 };
 
@@ -20,11 +20,10 @@ export default function ContactPage() {
           Contact
         </h1>
         <div className="max-w-[48ch] space-y-6 text-lg">
-          <p>Todd answers his own phone.</p>
           <p>
-            If you are working on something and want to know whether it is a fit, the fastest
-            route is a call. If you would rather write, send the drawings or a description of the
-            space and the rough timeline you are working against.
+            If you&rsquo;re working on something and want to know whether it&rsquo;s a fit, the
+            fastest way to find out is a call. If you&rsquo;d rather write, send the drawings or a
+            description of the space and the rough timeline you&rsquo;re working against.
           </p>
         </div>
       </div>

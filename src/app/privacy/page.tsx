@@ -43,7 +43,7 @@ export default function PrivacyPage() {
             The phone number and email address on this site open your own phone or mail
             application. Tapping either link does not send anything to us by itself and this
             site never sees the contents. If you go on to call or write, whatever you say is
-            between you and Todd, kept only as long as an ordinary business conversation needs
+            between you and us, kept only as long as an ordinary business conversation needs
             to be, and never sold or passed to anyone else. There is no contact form on this
             site, so there is nowhere on it for us to store anything you might have typed.
           </p>
