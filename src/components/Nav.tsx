@@ -47,8 +47,15 @@ export default function Nav() {
     >
       {/* Pinned to the header's true left edge, independent of the centered
           max-w-5xl container below, so its position doesn't drift with the
-          container's own auto-centering margin at in-between viewport widths. */}
-      <Link href="/" className="tap-target absolute left-3 top-1/2 -translate-y-1/2">
+          container's own auto-centering margin at in-between viewport widths.
+          On mobile, hidden while over the hero: at that width it sits right
+          on top of the hero headline, so it waits until the nav goes solid. */}
+      <Link
+        href="/"
+        className={`tap-target absolute left-3 top-1/2 -translate-y-1/2 ${
+          overHero ? "hidden md:block" : "block"
+        }`}
+      >
         <Image
           src="/text-logo.png"
           alt="T.R. Fox Contracting"
