@@ -45,17 +45,20 @@ export default function Nav() {
           : "border-b border-line bg-canvas"
       }`}
     >
-      <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-6 md:px-10">
-        <Link href="/" className="tap-target -ml-3 md:-ml-4">
-          <Image
-            src="/text-logo.png"
-            alt="T.R. Fox Contracting"
-            width={140}
-            height={32}
-            priority
-          />
-        </Link>
+      {/* Pinned to the header's true left edge, independent of the centered
+          max-w-5xl container below, so its position doesn't drift with the
+          container's own auto-centering margin at in-between viewport widths. */}
+      <Link href="/" className="tap-target absolute left-3 top-1/2 -translate-y-1/2">
+        <Image
+          src="/text-logo.png"
+          alt="T.R. Fox Contracting"
+          width={140}
+          height={32}
+          priority
+        />
+      </Link>
 
+      <div className="mx-auto flex h-full max-w-5xl items-center justify-end px-6 md:px-10">
         <nav aria-label="Primary" className="hidden md:block">
           <ul className="flex gap-8 font-display text-sm">
             {links.map((link) => {
