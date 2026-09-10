@@ -52,21 +52,24 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
-      {/* Hero */}
-      <section id="hero" className="relative -mt-20">
+      {/* Hero. min-h (not a fixed height) so the section grows to fit the
+          text at narrow widths instead of the CTA overflowing into the
+          section below; the photo fills whatever height that ends up
+          being via `fill` + object-cover, rather than dictating it. */}
+      <section id="hero" className="relative -mt-20 min-h-[70vh] md:min-h-[85vh]">
         <picture>
           <source media="(min-width: 768px)" srcSet="/hero-desktop.jpg" />
           <Image
             src="/hero-mobile.jpg"
             alt="A trowel finishing a plaster wall mid-renovation"
-            width={1080}
-            height={1350}
+            fill
+            sizes="100vw"
             priority
-            className="h-[70vh] w-full object-cover md:h-[85vh]"
+            className="object-cover"
           />
         </picture>
-        <div className="absolute inset-0">
-          <div className="mx-auto h-full max-w-5xl px-6 pt-10 md:px-10 md:pt-16">
+        <div className="relative">
+          <div className="mx-auto max-w-5xl px-6 pb-16 pt-10 md:px-10 md:pb-20 md:pt-16">
             <h1 className="max-w-[20ch] font-display text-4xl font-medium tracking-[-0.03em] text-ink md:text-6xl">
               Full-service general contracting, from the first walkthrough to the final coat of
               paint.
