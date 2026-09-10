@@ -52,16 +52,21 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
-      {/* Hero. The photo keeps a fixed, sane crop (h-[70vh]/[85vh]) no
-          matter how much text there is -- it never stretches or zooms in
-          to chase the text block's height. The text is pulled up over it
-          with a negative margin instead of an absolute overlay, so on a
-          narrow phone where the heading alone can run 4 lines, anything
-          that doesn't fit over the photo simply continues in normal flow
-          onto the plain canvas below, rather than fighting the photo's
-          crop or overflowing into the next section. */}
-      <section id="hero" className="relative -mt-20">
-        <div className="relative h-[70vh] md:h-[85vh]">
+      {/* Hero. The photo keeps a fixed, sane crop (h-[70vh] mobile, full
+          viewport on desktop) no matter how much text there is -- it never
+          stretches or zooms in to chase the text block's height. Image and
+          text are stacked in the same CSS grid cell rather than overlaid
+          with an absolute position or a negative margin: a grid track
+          sizes to the tallest item in it, so the section's real height is
+          always correct (a negative-margin version of this collapsed to
+          the text's height whenever the photo was taller, e.g. a short
+          headline against a full-viewport desktop photo, which let the
+          next section's opaque background paint over the still-taller
+          photo). On a narrow phone where the text needs more room than
+          the photo, it now correctly continues past it onto the plain
+          canvas instead of overflowing into the next section. */}
+      <section id="hero" className="relative -mt-20 grid">
+        <div className="relative col-start-1 row-start-1 h-[70vh] md:h-screen">
           <picture>
             <source media="(min-width: 768px)" srcSet="/hero-desktop.jpg" />
             <Image
@@ -74,7 +79,7 @@ export default function Home() {
             />
           </picture>
         </div>
-        <div className="relative -mt-[70vh] md:-mt-[85vh]">
+        <div className="relative col-start-1 row-start-1 self-start">
           <div className="mx-auto max-w-5xl px-6 pb-16 pt-10 md:px-10 md:pb-20 md:pt-16">
             <h1 className="max-w-[20ch] font-display text-4xl font-medium tracking-[-0.03em] text-ink md:text-6xl">
               T.R. Fox Contracting
