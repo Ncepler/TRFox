@@ -14,10 +14,13 @@ const links = [
 export default function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  // Solid by default: only the home page's hero section can put the nav into
-  // the transparent "over the hero" state, so every other route starts (and
-  // stays) solid.
-  const [overHero, setOverHero] = useState(false);
+  // Only the home page has a hero to sit over, and it's always at the very
+  // top of that page, so we know the correct state before the
+  // IntersectionObserver below ever runs. Seeding it here (rather than
+  // starting false and waiting for the observer's first callback) means the
+  // server-rendered HTML itself already has the mobile logo hidden, instead
+  // of it flashing visible for a moment on every load.
+  const [overHero, setOverHero] = useState(pathname === "/");
 
   useEffect(() => {
     const hero = document.getElementById("hero");
