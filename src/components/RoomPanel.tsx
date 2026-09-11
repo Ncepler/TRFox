@@ -101,14 +101,12 @@ export default function RoomPanel() {
           fill="none"
           aria-hidden="true"
         >
-          {/* Ceiling and floor planes close the box: with only the two walls
-              it reads as a pair of flat panels, not the inside of a room.
-              Drawn as polylines, not polygons: a polygon closes its last
-              point back to its first, and for these two that closing chord
-              runs straight across the face of the back wall. */}
-          <polyline points="80,110 220,60 520,60 620,90" {...faint} strokeWidth="1" />
+          {/* Exactly the shapes CLAUDE.md section 12 specifies. An earlier pass
+              also drew ceiling and floor planes to close the box, but their
+              last segments ran from the back wall's right edge out to x=620
+              with no right-hand wall to meet, so they read as two stray
+              diagonals trailing off into blank space. */}
           <polygon points="220,60 80,110 80,310 220,340" {...faint} strokeWidth="1" />
-          <polyline points="80,310 220,340 520,340 620,310" {...faint} strokeWidth="1" />
 
           <line x1="220" y1="60" x2="220" y2="340" stroke="var(--color-ink)" strokeWidth="1" />
           <rect x="220" y="60" width="300" height="280" stroke="var(--color-ink)" strokeWidth="1" />
@@ -160,7 +158,7 @@ export default function RoomPanel() {
 
       {/* Same rule-and-tick device as the project gallery's scrubber. */}
       <div
-        className="mt-6 max-w-[220px]"
+        className="mx-auto mt-6 max-w-[220px]"
         onMouseEnter={() => setHeld(true)}
         onMouseLeave={() => setHeld(false)}
         onFocus={() => setHeld(true)}
