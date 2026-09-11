@@ -150,7 +150,7 @@ export default function BoardPanel() {
 
       {/* Same rule-and-tick device as the project gallery's scrubber. */}
       <div
-        className="mt-6 max-w-[220px]"
+        className="mx-auto mt-6 max-w-[220px]"
         onMouseEnter={() => setHeld(true)}
         onMouseLeave={() => setHeld(false)}
         onFocus={() => setHeld(true)}
