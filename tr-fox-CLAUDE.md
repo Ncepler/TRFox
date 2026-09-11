@@ -377,3 +377,113 @@ Nav label is **Projects**, not Work, matching the route rename.
 - Match existing patterns. Don't introduce a second way of doing something already done once.
 - If something is ambiguous, stop and ask. Don't guess and don't work around it.
 - **When work is done, commit everything to the `main` branch. Never leave work staged.**
+
+---
+
+# 12. "Step into our work" — the room panel
+
+A new home page section, between the hero and "How the work runs." It exists because the site
+had one real gap left: nowhere on the page did a visitor actually see the work happening. The
+photo gallery (§5) requires a click. This doesn't.
+
+## The concept
+
+A plain architectural line drawing of a room corner, drawn the way a contractor's own sketch
+would look: two walls meeting at a seam, a door swing arc, nothing rendered or photographic. One
+wall has an opening. Real project photographs sit inside that opening and crossfade, slowly, on
+a loop, as if you were looking at the actual finished room through that gap in the drawing rather
+than at a drawing of one. Below it, the same tick-and-rule device used everywhere else on the
+site marks which photo is showing and lets a visitor jump to any of them directly.
+
+The drawing is not decoration around the photos. The photos are the one thing in the drawing
+that's real, and that contrast, blueprint versus finished room, is the entire point. It's a
+visual echo of the line in "How the work runs": we want to be in the room before the drawings are
+final. This is what it looks like once they aren't.
+
+## Geometry — exact, not approximate
+
+The illustration lives in a `680 × 440` coordinate space (`viewBox="0 0 680 440"`), scaled to fit
+its container width with `aspect-ratio: 680 / 440` on the wrapper so it stays proportional at
+every breakpoint. Every shape below is expressed in that space.
+
+- **Side wall (receding, faint):** a `<polygon>` at points `220,60 80,110 80,310 220,340`,
+  stroke `var(--ink)`, `stroke-opacity: 0.32`, `stroke-width: 1`, `fill: none`.
+- **Corner seam:** a single `<line>` from `220,60` to `220,340`, stroke `var(--ink)`, full
+  opacity, `stroke-width: 1`.
+- **Back wall:** a `<rect>` at `x=220 y=60 width=300 height=280`, stroke `var(--ink)`, full
+  opacity, `stroke-width: 1`, `fill: none`.
+- **Door swing (faint, side wall, lower left):** a quarter-circle arc,
+  `M100,310 A40,40 0 0 1 140,270`, plus a straight jamb line `100,310` to `100,270`. Both
+  `stroke-opacity: 0.32`, `stroke-width: 0.75`, `fill: none`.
+- **The opening:** a `<rect>` at `x=270 y=110 width=200 height=150`, stroke `var(--ink)`,
+  `stroke-width: 1.25`, `fill: none`. This rect is drawn as an outline only — nothing fills it in
+  the SVG. It exists purely to mark where the photo panel sits.
+- **Floor dimension line** (decorative, real architectural detail, not the functional index): a
+  horizontal line `220,365` to `520,365`, stroke `var(--accent)`, `stroke-width: 0.75`, with a
+  short diagonal tick at each end (`stroke-width: 1`) and a centered label above it in
+  `var(--ink-soft)` reading a placeholder footage figure. Ask before publishing a specific
+  number, or leave the tick marks with no label at all if no real figure is confirmed — an
+  invented dimension is exactly the kind of fabricated specific this project has already had to
+  walk back once.
+
+## The photo panel
+
+Not part of the SVG. A separate `position: absolute` HTML layer sitting inside the same
+`aspect-ratio`-locked wrapper, positioned by percentage so it always lines up with the opening
+regardless of rendered size:
+
+```
+left:   39.71%   (270 / 680)
+top:    25%      (110 / 440)
+width:  29.41%   (200 / 680)
+height: 34.09%   (150 / 440)
+```
+
+Inside it, five images stacked with `position: absolute; inset: 0`, `object-fit: cover`, each at
+`opacity: 0` except the active one at `opacity: 1`, crossfading on a timer. See "Behavior" below
+for the full interaction spec.
+
+Sources: `/photorotation1.jpg` through `/photorotation5.jpg` in `/public`. These files do not
+exist in the repo yet — reference them exactly as named, build the whole feature against them,
+and let it render with empty panel space until they're uploaded. Do not use a broken image icon
+as the fallback here, unlike the hero and logo precedent: those sit inside a photograph-shaped
+frame where a broken icon barely registers, but this panel sits inside a delicate line drawing,
+and a broken-image glyph in the middle of it would undercut the entire visual. On a load error,
+that image's slot renders nothing (a plain `var(--canvas-deep)` fill) rather than a broken-image
+icon.
+
+## The tick scrubber
+
+Directly beneath the whole illustration, not inside the SVG. Five ticks, one per photo, same
+visual language as the gallery's scrub bar (§5): a thin `var(--line)` rule with a tick per item,
+the active tick filled solid `var(--accent)`, the rest hollow. Clicking a tick jumps straight to
+that photo and resets the autoplay timer. This is the functional index; the SVG's own floor
+dimension line above is decorative and does not respond to clicks.
+
+## Behavior
+
+- Each photo shows for 4 seconds, then crossfades to the next over 600ms,
+  `cubic-bezier(0.22, 1, 0.36, 1)` (the same easing used elsewhere on the site), looping
+  indefinitely.
+- Autoplay starts only once the section scrolls into view (`IntersectionObserver`), and stops
+  when it scrolls back out, so it isn't running silently below the fold.
+- Pauses on hover or keyboard focus anywhere in the panel or the tick row, resumes on mouse-leave
+  or blur.
+- Pauses when the tab is hidden (`visibilitychange`), resumes when it's visible again.
+- `prefers-reduced-motion: reduce`: no autoplay at all. The first photo shows, the crossfade
+  transition is removed entirely (a hard cut if a tick is clicked), and advancing only happens by
+  clicking a tick. This matches how the rest of the site treats reduced motion: freeze at a
+  sensible resting state, keep manual control.
+
+## Accessibility
+
+The whole rotating region is `role="img"` with one static `aria-label`, something like "Rotating
+photographs of completed projects" — not five alt texts flickering in and out. The individual
+`<img>` elements carry `alt=""` and `aria-hidden="true"`, since the container's label already
+covers it. Each tick is a real `<button>` with `aria-label="Photo 2 of 5"` and
+`aria-current="true"` on the active one.
+
+## Section heading
+
+`Step into our work`, same heading treatment as every other home page section heading. No intro
+paragraph beneath it — the illustration is the content.
