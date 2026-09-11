@@ -107,6 +107,9 @@ export default function RoomPanel() {
               with no right-hand wall to meet, so they read as two stray
               diagonals trailing off into blank space. */}
           <polygon points="220,60 80,110 80,310 220,340" {...faint} strokeWidth="1" />
+          {/* Floor plane only: the projector sits on the floor, not against a
+              wall, so the floor edge is restored and nothing else. */}
+          <polyline points="220,340 520,340 620,318" {...faint} strokeWidth="1" />
 
           <line x1="220" y1="60" x2="220" y2="340" stroke="var(--color-ink)" strokeWidth="1" />
           <rect x="220" y="60" width="300" height="280" stroke="var(--color-ink)" strokeWidth="1" />
@@ -121,6 +124,45 @@ export default function RoomPanel() {
           <line x1="220" y1="365" x2="520" y2="365" stroke="var(--color-accent)" strokeWidth="0.75" />
           <line x1="216" y1="371" x2="224" y2="359" stroke="var(--color-accent)" strokeWidth="1" />
           <line x1="516" y1="371" x2="524" y2="359" stroke="var(--color-accent)" strokeWidth="1" />
+
+          {/* Projector on the floor in the near-right corner, throwing the
+              rotating photographs onto the opening. Accent for the beam, the
+              same colour the tick scrubber uses for the live/active element. */}
+          <rect
+            x="552"
+            y="290"
+            width="52"
+            height="26"
+            rx="2"
+            stroke="var(--color-ink)"
+            strokeWidth="1.25"
+            fill="none"
+          />
+          <circle cx="552" cy="303" r="7" stroke="var(--color-ink)" strokeWidth="1.25" fill="none" />
+          <line x1="558" y1="316" x2="558" y2="320" stroke="var(--color-ink)" strokeOpacity={0.5} strokeWidth="1" />
+          <line x1="598" y1="316" x2="598" y2="320" stroke="var(--color-ink)" strokeOpacity={0.5} strokeWidth="1" />
+          <line
+            x1="552"
+            y1="303"
+            x2="470"
+            y2="130"
+            stroke="var(--color-accent)"
+            strokeWidth="0.75"
+            strokeOpacity={0.35}
+            strokeDasharray="2 4"
+            fill="none"
+          />
+          <line
+            x1="552"
+            y1="303"
+            x2="470"
+            y2="240"
+            stroke="var(--color-accent)"
+            strokeWidth="0.75"
+            strokeOpacity={0.35}
+            strokeDasharray="2 4"
+            fill="none"
+          />
         </svg>
 
         <div
