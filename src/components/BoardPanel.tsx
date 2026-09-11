@@ -12,21 +12,19 @@ const photos = Array.from(
   (_, i) => `/photorotation${i + 1}.jpg`
 );
 
-// Measured by eye against /public/board.jpg: the panel's blank face, inside
-// its frame border, as a percentage of the full 16:9 photograph. Pulled in a
-// couple of points from the frame's inner edge so the rotating photos read
-// as filling the canvas rather than bleeding onto the frame or leaving a
-// sliver of the panel showing past the overlay.
-//
-// NOTE: /public/board.jpg has not been uploaded yet, so these are
-// placeholder values (roughly centered, framed inset) rather than a real
-// measurement. Re-measure against the actual photo once it lands and adjust
-// these four numbers — see the task report for details.
+// Measured by eye against /public/board.jpg (1672x941): the panel's blank
+// face, inside its black frame border, as a percentage of the full 16:9
+// photograph. The frame's inner edge sits at roughly x 386-1277, y 171-785
+// px, but the panel is photographed at a slight angle rather than dead-on
+// (the left edge alone drifts ~388px at the top to ~384px at the bottom),
+// so these percentages use the innermost reading on each side and are
+// pulled in a couple more points so the overlay stays inside the gray face
+// on every side rather than touching the frame.
 const panelBox = {
-  left: "31%",
-  top: "22%",
-  width: "38%",
-  height: "46%",
+  left: "23.5%",
+  top: "18.5%",
+  width: "52.5%",
+  height: "64%",
 };
 
 export default function BoardPanel() {
