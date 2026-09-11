@@ -3,13 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 const links = [
   { href: "/projects", label: "Projects" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
+
+// Runs before paint so the header never shows a frame in the wrong state.
+// React warns if useLayoutEffect is called during SSR, so fall back to
+// useEffect on the server, where a layout effect would be a no-op anyway.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 export default function Nav() {
   const pathname = usePathname();
@@ -19,15 +25,27 @@ export default function Nav() {
   // IntersectionObserver below ever runs. Seeding it here (rather than
   // starting false and waiting for the observer's first callback) means the
   // server-rendered HTML itself already has the mobile logo hidden, instead
-  // of it flashing visible for a moment on every load.
+  // of it flashing visible for a moment on every load. This initializer only
+  // runs on first mount though; the layout effect below is what keeps it
+  // right across client-side navigation, since Nav lives in the layout and
+  // never remounts.
   const [overHero, setOverHero] = useState(pathname === "/");
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const hero = document.getElementById("hero");
     if (!hero) {
       setOverHero(false);
       return;
     }
+
+    // Measure the hero directly, before paint. Navigating back to the home
+    // page does not remount Nav, so the useState initializer above does not
+    // re-run and overHero is still stale-false from the previous route. The
+    // observer can't rescue it either, because its one synchronous first
+    // callback is deliberately skipped below, which left the header solid and
+    // the mobile logo sitting on the hero headline until the next scroll.
+    const rect = hero.getBoundingClientRect();
+    setOverHero(rect.bottom > 0 && rect.top < window.innerHeight);
 
     // The observer's own first callback fires synchronously on observe(),
     // reporting intersection at that exact instant. On some mobile browsers
