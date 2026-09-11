@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ProjectEntry from "@/components/ProjectEntry";
+import RoomPanel from "@/components/RoomPanel";
 import { projects } from "@/data/projects";
 import { press } from "@/data/press";
 import { phone, phoneHref, email, emailHref, foundingYear } from "@/data/firm";
@@ -95,6 +96,18 @@ export default function Home() {
             >
               Start a conversation
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Step into our work */}
+      <section className="border-t border-line">
+        <div className="mx-auto max-w-5xl px-6 py-16 md:px-10 md:py-24">
+          <h2 className="font-display text-2xl font-medium tracking-[-0.03em] md:text-3xl">
+            Step into our work
+          </h2>
+          <div className="mt-12">
+            <RoomPanel />
           </div>
         </div>
       </section>
