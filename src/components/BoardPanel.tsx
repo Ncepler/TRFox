@@ -12,18 +12,24 @@ const photos = Array.from(
   (_, i) => `/photorotation${i + 1}.jpg`
 );
 
-// The opening in the drawing is rect x=270 y=110 w=200 h=150 inside a
-// 680x440 viewBox. The photo panel is plain HTML rather than SVG content,
-// so it's positioned in percentages of the same aspect-locked wrapper and
-// stays registered with the drawn outline at every rendered size.
+// Measured by eye against /public/board.jpg: the panel's blank face, inside
+// its frame border, as a percentage of the full 16:9 photograph. Pulled in a
+// couple of points from the frame's inner edge so the rotating photos read
+// as filling the canvas rather than bleeding onto the frame or leaving a
+// sliver of the panel showing past the overlay.
+//
+// NOTE: /public/board.jpg has not been uploaded yet, so these are
+// placeholder values (roughly centered, framed inset) rather than a real
+// measurement. Re-measure against the actual photo once it lands and adjust
+// these four numbers — see the task report for details.
 const panelBox = {
-  left: `${(270 / 680) * 100}%`,
-  top: `${(110 / 440) * 100}%`,
-  width: `${(200 / 680) * 100}%`,
-  height: `${(150 / 440) * 100}%`,
+  left: "31%",
+  top: "22%",
+  width: "38%",
+  height: "46%",
 };
 
-export default function RoomPanel() {
+export default function BoardPanel() {
   const [index, setIndex] = useState(0);
   const [failed, setFailed] = useState<boolean[]>(() =>
     Array(PHOTO_COUNT).fill(false)
@@ -32,6 +38,7 @@ export default function RoomPanel() {
   const [inView, setInView] = useState(false);
   const [held, setHeld] = useState(false); // hover or keyboard focus
   const [tabHidden, setTabHidden] = useState(false);
+  const [boardFailed, setBoardFailed] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -83,47 +90,32 @@ export default function RoomPanel() {
     });
   }, []);
 
-  const faint = { stroke: "var(--color-ink)", strokeOpacity: 0.32 };
-
   return (
     <div ref={sectionRef}>
       <div
         className="relative w-full"
-        style={{ aspectRatio: "680 / 440" }}
+        style={{ aspectRatio: "16 / 9", backgroundColor: "var(--color-canvas-deep)" }}
         onMouseEnter={() => setHeld(true)}
         onMouseLeave={() => setHeld(false)}
         onFocus={() => setHeld(true)}
         onBlur={() => setHeld(false)}
       >
-        <svg
-          className="absolute inset-0 h-full w-full"
-          viewBox="0 0 680 440"
-          fill="none"
-          aria-hidden="true"
-        >
-          {/* Ceiling and floor planes close the box: with only the two walls
-              it reads as a pair of flat panels, not the inside of a room.
-              Drawn as polylines, not polygons: a polygon closes its last
-              point back to its first, and for these two that closing chord
-              runs straight across the face of the back wall. */}
-          <polyline points="80,110 220,60 520,60 620,90" {...faint} strokeWidth="1" />
-          <polygon points="220,60 80,110 80,310 220,340" {...faint} strokeWidth="1" />
-          <polyline points="80,310 220,340 520,340 620,310" {...faint} strokeWidth="1" />
-
-          <line x1="220" y1="60" x2="220" y2="340" stroke="var(--color-ink)" strokeWidth="1" />
-          <rect x="220" y="60" width="300" height="280" stroke="var(--color-ink)" strokeWidth="1" />
-
-          <path d="M100,310 A40,40 0 0 1 140,270" {...faint} strokeWidth="0.75" />
-          <line x1="100" y1="310" x2="100" y2="270" {...faint} strokeWidth="0.75" />
-
-          <rect x="270" y="110" width="200" height="150" stroke="var(--color-ink)" strokeWidth="1.25" />
-
-          {/* Decorative floor dimension line. Deliberately unlabeled: no
-              square footage figure for this drawing has been confirmed. */}
-          <line x1="220" y1="365" x2="520" y2="365" stroke="var(--color-accent)" strokeWidth="0.75" />
-          <line x1="216" y1="371" x2="224" y2="359" stroke="var(--color-accent)" strokeWidth="1" />
-          <line x1="516" y1="371" x2="524" y2="359" stroke="var(--color-accent)" strokeWidth="1" />
-        </svg>
+        {!boardFailed && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src="/board.jpg"
+            alt=""
+            aria-hidden="true"
+            // Same non-blocking pattern as the rotating photos below: if the
+            // asset isn't uploaded yet, the section still renders, just with
+            // an empty background instead of a broken-image icon.
+            ref={(node) => {
+              if (node?.complete && node.naturalWidth === 0) setBoardFailed(true);
+            }}
+            onError={() => setBoardFailed(true)}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
 
         <div
           role="img"
