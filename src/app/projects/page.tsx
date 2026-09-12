@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import ProjectEntry from "@/components/ProjectEntry";
-import { projects, type Project } from "@/data/projects";
+import type { Project } from "@/data/projects";
+import { readProjects } from "@/lib/blob";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -19,7 +22,8 @@ const groups: { key: Project["group"]; heading: string }[] = [
   { key: "commercial", heading: "Commercial and installations" },
 ];
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await readProjects();
   return (
     <div className="mx-auto max-w-5xl px-6 py-16 md:px-10 md:py-24">
       <h1 className="font-display text-4xl font-medium tracking-[-0.03em] md:text-5xl">Projects</h1>
