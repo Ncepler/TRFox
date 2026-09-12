@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import ProjectEntry from "@/components/ProjectEntry";
-import RoomPanel from "@/components/RoomPanel";
+import BoardPanel from "@/components/BoardPanel";
 import { projects } from "@/data/projects";
 import { press } from "@/data/press";
 import { phone, phoneHref, email, emailHref, foundingYear } from "@/data/firm";
@@ -107,7 +107,7 @@ export default function Home() {
             Step into our work
           </h2>
           <div className="mt-12">
-            <RoomPanel />
+            <BoardPanel />
           </div>
         </div>
       </section>

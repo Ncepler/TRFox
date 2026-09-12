@@ -12,18 +12,22 @@ const photos = Array.from(
   (_, i) => `/photorotation${i + 1}.jpg`
 );
 
-// The opening in the drawing is rect x=270 y=110 w=200 h=150 inside a
-// 680x440 viewBox. The photo panel is plain HTML rather than SVG content,
-// so it's positioned in percentages of the same aspect-locked wrapper and
-// stays registered with the drawn outline at every rendered size.
+// Measured by eye against /public/board.jpg (1672x941): the panel's blank
+// face, inside its black frame border, as a percentage of the full 16:9
+// photograph. The frame's inner edge sits at roughly x 386-1277, y 171-785
+// px, but the panel is photographed at a slight angle rather than dead-on
+// (the left edge alone drifts ~388px at the top to ~384px at the bottom),
+// so these percentages use the innermost reading on each side and are
+// pulled in a couple more points so the overlay stays inside the gray face
+// on every side rather than touching the frame.
 const panelBox = {
-  left: `${(270 / 680) * 100}%`,
-  top: `${(110 / 440) * 100}%`,
-  width: `${(200 / 680) * 100}%`,
-  height: `${(150 / 440) * 100}%`,
+  left: "23.5%",
+  top: "18.5%",
+  width: "52.5%",
+  height: "64%",
 };
 
-export default function RoomPanel() {
+export default function BoardPanel() {
   const [index, setIndex] = useState(0);
   const [failed, setFailed] = useState<boolean[]>(() =>
     Array(PHOTO_COUNT).fill(false)
@@ -32,6 +36,7 @@ export default function RoomPanel() {
   const [inView, setInView] = useState(false);
   const [held, setHeld] = useState(false); // hover or keyboard focus
   const [tabHidden, setTabHidden] = useState(false);
+  const [boardFailed, setBoardFailed] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -83,87 +88,32 @@ export default function RoomPanel() {
     });
   }, []);
 
-  const faint = { stroke: "var(--color-ink)", strokeOpacity: 0.32 };
-
   return (
     <div ref={sectionRef}>
       <div
         className="relative w-full"
-        style={{ aspectRatio: "680 / 440" }}
+        style={{ aspectRatio: "16 / 9", backgroundColor: "var(--color-canvas-deep)" }}
         onMouseEnter={() => setHeld(true)}
         onMouseLeave={() => setHeld(false)}
         onFocus={() => setHeld(true)}
         onBlur={() => setHeld(false)}
       >
-        <svg
-          className="absolute inset-0 h-full w-full"
-          viewBox="0 0 680 440"
-          fill="none"
-          aria-hidden="true"
-        >
-          {/* Exactly the shapes CLAUDE.md section 12 specifies. An earlier pass
-              also drew ceiling and floor planes to close the box, but their
-              last segments ran from the back wall's right edge out to x=620
-              with no right-hand wall to meet, so they read as two stray
-              diagonals trailing off into blank space. */}
-          <polygon points="220,60 80,110 80,310 220,340" {...faint} strokeWidth="1" />
-          {/* Floor plane only: the projector sits on the floor, not against a
-              wall, so the floor edge is restored and nothing else. */}
-          <polyline points="220,340 520,340 620,318" {...faint} strokeWidth="1" />
-
-          <line x1="220" y1="60" x2="220" y2="340" stroke="var(--color-ink)" strokeWidth="1" />
-          <rect x="220" y="60" width="300" height="280" stroke="var(--color-ink)" strokeWidth="1" />
-
-          <path d="M100,310 A40,40 0 0 1 140,270" {...faint} strokeWidth="0.75" />
-          <line x1="100" y1="310" x2="100" y2="270" {...faint} strokeWidth="0.75" />
-
-          <rect x="270" y="110" width="200" height="150" stroke="var(--color-ink)" strokeWidth="1.25" />
-
-          {/* Decorative floor dimension line. Deliberately unlabeled: no
-              square footage figure for this drawing has been confirmed. */}
-          <line x1="220" y1="365" x2="520" y2="365" stroke="var(--color-accent)" strokeWidth="0.75" />
-          <line x1="216" y1="371" x2="224" y2="359" stroke="var(--color-accent)" strokeWidth="1" />
-          <line x1="516" y1="371" x2="524" y2="359" stroke="var(--color-accent)" strokeWidth="1" />
-
-          {/* Projector on the floor in the near-right corner, throwing the
-              rotating photographs onto the opening. Accent for the beam, the
-              same colour the tick scrubber uses for the live/active element. */}
-          <rect
-            x="552"
-            y="290"
-            width="52"
-            height="26"
-            rx="2"
-            stroke="var(--color-ink)"
-            strokeWidth="1.25"
-            fill="none"
+        {!boardFailed && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src="/board.jpg"
+            alt=""
+            aria-hidden="true"
+            // Same non-blocking pattern as the rotating photos below: if the
+            // asset isn't uploaded yet, the section still renders, just with
+            // an empty background instead of a broken-image icon.
+            ref={(node) => {
+              if (node?.complete && node.naturalWidth === 0) setBoardFailed(true);
+            }}
+            onError={() => setBoardFailed(true)}
+            className="absolute inset-0 h-full w-full object-cover"
           />
-          <circle cx="552" cy="303" r="7" stroke="var(--color-ink)" strokeWidth="1.25" fill="none" />
-          <line x1="558" y1="316" x2="558" y2="320" stroke="var(--color-ink)" strokeOpacity={0.5} strokeWidth="1" />
-          <line x1="598" y1="316" x2="598" y2="320" stroke="var(--color-ink)" strokeOpacity={0.5} strokeWidth="1" />
-          <line
-            x1="552"
-            y1="303"
-            x2="470"
-            y2="130"
-            stroke="var(--color-accent)"
-            strokeWidth="0.75"
-            strokeOpacity={0.35}
-            strokeDasharray="2 4"
-            fill="none"
-          />
-          <line
-            x1="552"
-            y1="303"
-            x2="470"
-            y2="240"
-            stroke="var(--color-accent)"
-            strokeWidth="0.75"
-            strokeOpacity={0.35}
-            strokeDasharray="2 4"
-            fill="none"
-          />
-        </svg>
+        )}
 
         <div
           role="img"
