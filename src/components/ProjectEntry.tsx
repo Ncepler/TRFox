@@ -20,13 +20,8 @@ export default function ProjectEntry({ project }: { project: Project }) {
           {project.sf.toLocaleString("en-US")} sf
         </p>
       ) : null}
-      {project.photoCount ? (
-        <ProjectGallery
-          slug={project.id}
-          address={project.address}
-          scope={project.scope}
-          photoCount={project.photoCount}
-        />
+      {project.images && project.images.length > 0 ? (
+        <ProjectGallery address={project.address} images={project.images} />
       ) : null}
     </div>
   );
