@@ -53,8 +53,8 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
-      {/* Hero. The photo keeps a fixed, sane crop (h-[70vh] mobile, full
-          viewport on desktop) no matter how much text there is -- it never
+      {/* Hero. The photo keeps a fixed, sane crop (full viewport height on
+          both mobile and desktop) no matter how much text there is -- it never
           stretches or zooms in to chase the text block's height. Image and
           text are stacked in the same CSS grid cell rather than overlaid
           with an absolute position or a negative margin: a grid track
@@ -67,7 +67,7 @@ export default function Home() {
           the photo, it now correctly continues past it onto the plain
           canvas instead of overflowing into the next section. */}
       <section id="hero" className="relative -mt-20 grid">
-        <div className="relative col-start-1 row-start-1 h-[70vh] md:h-screen">
+        <div className="relative col-start-1 row-start-1 h-screen">
           <picture>
             <source media="(min-width: 768px)" srcSet="/hero-desktop.jpg" />
             <Image
