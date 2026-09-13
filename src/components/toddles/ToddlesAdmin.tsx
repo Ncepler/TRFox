@@ -240,8 +240,24 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
 
           <div className="flex flex-col gap-2">
             <span className="font-display text-sm text-ink-soft">Images</span>
-            <input type="file" accept="image/*" multiple disabled={uploading} onChange={(e) => onFilesSelected(e.target.files)} />
-            {uploading ? <p className="text-sm text-ink-soft">Uploading&hellip;</p> : null}
+            {/* A bare <input type="file"> renders as unstyled system text ("Choose
+                Files" / "No file chosen") that doesn't read as clickable. The
+                input itself can't be restyled directly, so it's visually hidden
+                and a real button-styled label triggers it instead. */}
+            <label
+              aria-disabled={uploading}
+              className="tap-target inline-flex w-fit cursor-pointer items-center justify-center border border-ink px-4 py-2 font-display text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+            >
+              {uploading ? "Uploading…" : "Choose images"}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={uploading}
+                onChange={(e) => onFilesSelected(e.target.files)}
+                className="sr-only"
+              />
+            </label>
             {form.images.length > 0 && (
               <ul className="mt-2 space-y-3">
                 {form.images.map((img, i) => (
@@ -289,12 +305,14 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
             </p>
           ) : null}
 
-          <div className="flex gap-4">
+          <div className="flex items-center gap-4">
+            {/* An underlined text link, matching the public site's link style,
+                read as decoration rather than the form's primary action here --
+                a solid filled button makes it unmistakable. */}
             <button
               type="submit"
               disabled={isPending || uploading}
-              className="tap-target self-start border-b border-accent font-display text-sm disabled:opacity-50"
-              style={{ color: "var(--color-accent)" }}
+              className="tap-target self-start border border-ink bg-ink px-5 py-2 font-display text-sm text-canvas disabled:opacity-50"
             >
               {form.id ? "Save changes" : "Add project"}
             </button>
