@@ -61,8 +61,9 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
             ? `Added ${added} project${added === 1 ? "" : "s"} from the site.`
             : "Already up to date -- nothing new to add.",
         );
-      } catch {
-        setSeedMessage("Import failed.");
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err);
+        setSeedMessage(`Import failed: ${detail}`);
       } finally {
         setSeeding(false);
       }
