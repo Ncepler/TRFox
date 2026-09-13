@@ -1,24 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ProjectImage } from "@/data/projects";
 
 type ProjectGalleryProps = {
-  slug: string;
   address: string;
-  scope: string;
-  photoCount: number;
+  images: ProjectImage[];
 };
 
-export default function ProjectGallery({ slug, address, scope, photoCount }: ProjectGalleryProps) {
+export default function ProjectGallery({ address, images }: ProjectGalleryProps) {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
 
-  const photos = Array.from({ length: photoCount }, (_, i) =>
-    `/projects/${slug}/${String(i + 1).padStart(2, "0")}.jpg`
-  );
+  const photos = images;
 
   const openGallery = () => {
     setIndex(0);
@@ -85,6 +82,10 @@ export default function ProjectGallery({ slug, address, scope, photoCount }: Pro
     touchStartX.current = null;
   };
 
+  if (photos.length === 0) return null;
+
+  const current = photos[index];
+
   return (
     <>
       <button
@@ -127,8 +128,8 @@ export default function ProjectGallery({ slug, address, scope, photoCount }: Pro
           <div className="relative flex flex-1 items-center justify-center overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={photos[index]}
-              alt={`${address}, photo ${index + 1} of ${photos.length}`}
+              src={current.url}
+              alt={current.caption || `${address}, photo ${index + 1} of ${photos.length}`}
               className="max-h-full max-w-full object-contain"
             />
             {photos.length > 1 && (
@@ -155,7 +156,7 @@ export default function ProjectGallery({ slug, address, scope, photoCount }: Pro
 
           <div className="px-6 pb-3 text-center font-display text-sm" style={{ color: "var(--color-canvas)" }}>
             <span>{address}</span>
-            {scope ? <span className="opacity-70">. {scope}</span> : null}
+            {current.caption ? <span className="opacity-70">. {current.caption}</span> : null}
           </div>
 
           {photos.length > 1 && (
