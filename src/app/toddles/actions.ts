@@ -90,14 +90,27 @@ export async function deleteProjectAction(id: string): Promise<Project[]> {
 // aren't already in the blob store over, so Toddles starts out matching
 // what's already live. Safe to click more than once -- it only ever adds
 // entries whose id isn't already present, never overwrites or duplicates.
-export async function seedProjectsFromSiteAction(): Promise<{ projects: Project[]; added: number }> {
-  await requireAuthed();
-  const existing = await readProjects();
-  const existingIds = new Set(existing.map((p) => p.id));
-  const missing = siteProjects.filter((p) => !existingIds.has(p.id));
-  const updated = [...existing, ...missing];
-  if (missing.length > 0) {
-    await writeProjects(updated);
+//
+// Errors are caught and returned (rather than thrown) because Next.js
+// redacts thrown Server Action errors down to an opaque digest in
+// production -- this is the only way the real cause reaches the browser.
+export type SeedResult =
+  | { ok: true; projects: Project[]; added: number }
+  | { ok: false; message: string };
+
+export async function seedProjectsFromSiteAction(): Promise<SeedResult> {
+  try {
+    await requireAuthed();
+    const existing = await readProjects();
+    const existingIds = new Set(existing.map((p) => p.id));
+    const missing = siteProjects.filter((p) => !existingIds.has(p.id));
+    const updated = [...existing, ...missing];
+    if (missing.length > 0) {
+      await writeProjects(updated);
+    }
+    return { ok: true, projects: updated, added: missing.length };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { ok: false, message };
   }
-  return { projects: updated, added: missing.length };
 }

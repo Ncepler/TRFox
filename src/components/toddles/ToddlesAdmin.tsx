@@ -54,11 +54,15 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
     setSeedMessage(null);
     startTransition(async () => {
       try {
-        const { projects: updated, added } = await seedProjectsFromSiteAction();
-        setProjects(updated);
+        const result = await seedProjectsFromSiteAction();
+        if (!result.ok) {
+          setSeedMessage(`Import failed: ${result.message}`);
+          return;
+        }
+        setProjects(result.projects);
         setSeedMessage(
-          added > 0
-            ? `Added ${added} project${added === 1 ? "" : "s"} from the site.`
+          result.added > 0
+            ? `Added ${result.added} project${result.added === 1 ? "" : "s"} from the site.`
             : "Already up to date -- nothing new to add.",
         );
       } catch (err) {
