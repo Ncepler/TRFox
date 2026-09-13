@@ -19,7 +19,20 @@ export async function readProjects(): Promise<Project[]> {
   }
 }
 
+// @vercel/blob reads BLOB_READ_WRITE_TOKEN itself and throws a generic,
+// easy-to-miss error when it's absent -- every write path (add, edit,
+// delete, import, and image upload) checks it here first so they all
+// surface the same specific, actionable message instead.
+export function assertBlobConfigured(): void {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error(
+      "Storage isn't connected: no Vercel Blob store is linked to this project (BLOB_READ_WRITE_TOKEN is missing). Add one in the Vercel dashboard under Storage, then redeploy."
+    );
+  }
+}
+
 export async function writeProjects(projects: Project[]): Promise<void> {
+  assertBlobConfigured();
   await put(PROJECTS_PATHNAME, JSON.stringify(projects, null, 2), {
     access: "public",
     contentType: "application/json",

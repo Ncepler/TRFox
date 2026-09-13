@@ -83,8 +83,12 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
       for (const file of Array.from(files)) {
         const fd = new FormData();
         fd.append("file", file);
-        const url = await uploadImageAction(fd);
-        uploaded.push({ url, caption: "" });
+        const result = await uploadImageAction(fd);
+        if (!result.ok) {
+          setError(result.message);
+          return;
+        }
+        uploaded.push({ url: result.url, caption: "" });
       }
       setForm((f) => ({ ...f, images: [...f.images, ...uploaded] }));
     } catch {
@@ -143,27 +147,31 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
     };
     const id = form.id;
     startTransition(async () => {
-      try {
-        const updated = id
-          ? await updateProjectAction({ id, ...input })
-          : await addProjectAction(input);
-        setProjects(updated);
-        resetForm();
-      } catch {
-        setError("Save failed.");
+      const result = id
+        ? await updateProjectAction({ id, ...input })
+        : await addProjectAction(input);
+      // A generic "Save failed." hid the real cause (e.g. no Blob store
+      // connected) -- the action returns its own message instead of
+      // throwing, since Next.js redacts thrown Server Action errors down
+      // to an opaque digest in production.
+      if (!result.ok) {
+        setError(result.message);
+        return;
       }
+      setProjects(result.projects);
+      resetForm();
     });
   };
 
   const onDelete = (id: string) => {
     startTransition(async () => {
-      try {
-        const updated = await deleteProjectAction(id);
-        setProjects(updated);
-        if (form.id === id) resetForm();
-      } catch {
-        setError("Delete failed.");
+      const result = await deleteProjectAction(id);
+      if (!result.ok) {
+        setError(result.message);
+        return;
       }
+      setProjects(result.projects);
+      if (form.id === id) resetForm();
     });
   };
 
