@@ -8,7 +8,7 @@ import { isAuthed, setAuthed } from "@/lib/toddlesAuth";
 
 export async function loginAction(formData: FormData): Promise<void> {
   const password = String(formData.get("password") ?? "");
-  if (!process.env.TODDLES_PASSWORD || password !== process.env.TODDLES_PASSWORD) {
+  if (!process.env.TODDLES_ADMIN_PASSWORD || password !== process.env.TODDLES_ADMIN_PASSWORD) {
     redirect("/toddles?error=1");
   }
   await setAuthed();
