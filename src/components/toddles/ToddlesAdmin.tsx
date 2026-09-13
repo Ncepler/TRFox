@@ -5,6 +5,7 @@ import type { Project, ProjectImage } from "@/data/projects";
 import {
   addProjectAction,
   deleteProjectAction,
+  seedProjectsFromSiteAction,
   updateProjectAction,
   uploadImageAction,
   type ProjectInput,
@@ -43,8 +44,30 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
   const [uploading, setUploading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [seedMessage, setSeedMessage] = useState<string | null>(null);
+  const [seeding, setSeeding] = useState(false);
 
   const resetForm = () => setForm(emptyForm);
+
+  const onSeedFromSite = () => {
+    setSeeding(true);
+    setSeedMessage(null);
+    startTransition(async () => {
+      try {
+        const { projects: updated, added } = await seedProjectsFromSiteAction();
+        setProjects(updated);
+        setSeedMessage(
+          added > 0
+            ? `Added ${added} project${added === 1 ? "" : "s"} from the site.`
+            : "Already up to date -- nothing new to add.",
+        );
+      } catch {
+        setSeedMessage("Import failed.");
+      } finally {
+        setSeeding(false);
+      }
+    });
+  };
 
   const onFilesSelected = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -280,7 +303,21 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-medium tracking-[-0.03em]">Projects</h2>
+        <div className="flex flex-wrap items-baseline justify-between gap-4">
+          <h2 className="font-display text-2xl font-medium tracking-[-0.03em]">Projects</h2>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onSeedFromSite}
+              disabled={seeding || isPending}
+              className="tap-target border-b border-accent font-display text-sm disabled:opacity-50"
+              style={{ color: "var(--color-accent)" }}
+            >
+              {seeding ? "Importing…" : "Import projects from site"}
+            </button>
+            {seedMessage ? <p className="text-sm text-ink-soft">{seedMessage}</p> : null}
+          </div>
+        </div>
         <div className="mt-8 grid gap-8 md:grid-cols-2">
           {projects.map((project) => (
             <div key={project.id} className="border border-line p-4">

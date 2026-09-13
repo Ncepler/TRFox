@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { put } from "@vercel/blob";
 import type { Project, ProjectImage } from "@/data/projects";
+import { projects as siteProjects } from "@/data/projects";
 import { readProjects, writeProjects } from "@/lib/blob";
 import { isAuthed, setAuthed } from "@/lib/toddlesAuth";
 
@@ -81,4 +82,22 @@ export async function deleteProjectAction(id: string): Promise<Project[]> {
   const updated = projects.filter((p) => p.id !== id);
   await writeProjects(updated);
   return updated;
+}
+
+// One-click bootstrap: the site originally shipped with a hardcoded project
+// list (src/data/projects.ts). Before this admin existed, that hardcoded
+// list *was* "the projects on the website." This copies any of those that
+// aren't already in the blob store over, so Toddles starts out matching
+// what's already live. Safe to click more than once -- it only ever adds
+// entries whose id isn't already present, never overwrites or duplicates.
+export async function seedProjectsFromSiteAction(): Promise<{ projects: Project[]; added: number }> {
+  await requireAuthed();
+  const existing = await readProjects();
+  const existingIds = new Set(existing.map((p) => p.id));
+  const missing = siteProjects.filter((p) => !existingIds.has(p.id));
+  const updated = [...existing, ...missing];
+  if (missing.length > 0) {
+    await writeProjects(updated);
+  }
+  return { projects: updated, added: missing.length };
 }
