@@ -17,6 +17,21 @@ const GROUPS: { value: Project["group"]; label: string }[] = [
   { value: "commercial", label: "Commercial and installations" },
 ];
 
+// A shared vocabulary for this dashboard -- soft corners and real button
+// chrome, not the public site's flat underlined links. See
+// .claude/skills/toddles-dashboard/SKILL.md for the rules these encode.
+const inputClass =
+  "w-full rounded-lg border border-line bg-canvas px-3 py-2 text-ink transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
+
+const primaryButtonClass =
+  "tap-target inline-flex items-center justify-center rounded-full bg-ink px-5 py-2.5 font-display text-sm text-canvas transition-transform duration-150 active:scale-[0.97] disabled:opacity-50";
+
+const secondaryButtonClass =
+  "tap-target inline-flex items-center justify-center rounded-full border border-line px-4 py-2 font-display text-sm text-ink transition-[background-color,transform] duration-150 hover:bg-canvas-deep active:scale-[0.97] disabled:opacity-50";
+
+const ghostButtonClass =
+  "tap-target inline-flex items-center justify-center rounded-full px-3 py-1.5 font-display text-sm transition-[background-color,transform] duration-150 hover:bg-canvas-deep active:scale-[0.97] disabled:opacity-30";
+
 type FormState = {
   id?: string;
   address: string;
@@ -41,13 +56,27 @@ const emptyForm: FormState = {
 export default function ToddlesAdmin({ initialProjects }: { initialProjects: Project[] }) {
   const [projects, setProjects] = useState(initialProjects);
   const [form, setForm] = useState<FormState>(emptyForm);
+  // The form (fields + image picker) starts collapsed behind a single "Add
+  // project" button, rather than always open -- an empty form sitting above
+  // an empty list read as broken, not as an invitation to fill it in.
+  const [formOpen, setFormOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [seedMessage, setSeedMessage] = useState<string | null>(null);
   const [seeding, setSeeding] = useState(false);
 
-  const resetForm = () => setForm(emptyForm);
+  const openForNewProject = () => {
+    setError(null);
+    setForm(emptyForm);
+    setFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setFormOpen(false);
+    setError(null);
+    setForm(emptyForm);
+  };
 
   const onSeedFromSite = () => {
     setSeeding(true);
@@ -131,6 +160,7 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
       year: project.year ? String(project.year) : "",
       images: project.images ?? [],
     });
+    setFormOpen(true);
   };
 
   const onSubmit = (e: React.FormEvent) => {
@@ -159,7 +189,7 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
         return;
       }
       setProjects(result.projects);
-      resetForm();
+      closeForm();
     });
   };
 
@@ -171,215 +201,242 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
         return;
       }
       setProjects(result.projects);
-      if (form.id === id) resetForm();
+      if (form.id === id) closeForm();
     });
   };
 
   return (
-    <div className="mt-12 space-y-16">
-      <section>
-        <h2 className="font-display text-2xl font-medium tracking-[-0.03em]">
-          {form.id ? "Edit project" : "Add project"}
-        </h2>
-        <form onSubmit={onSubmit} className="mt-6 grid max-w-2xl gap-6">
-          <label className="flex flex-col gap-2">
-            <span className="font-display text-sm text-ink-soft">Address</span>
-            <input
-              type="text"
-              required
-              value={form.address}
-              onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-              className="border border-line bg-canvas px-3 py-2"
-            />
-          </label>
-          <label className="flex flex-col gap-2">
-            <span className="font-display text-sm text-ink-soft">Area</span>
-            <input
-              type="text"
-              required
-              value={form.area}
-              onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))}
-              className="border border-line bg-canvas px-3 py-2"
-            />
-          </label>
-          <label className="flex flex-col gap-2">
-            <span className="font-display text-sm text-ink-soft">Group</span>
-            <select
-              value={form.group}
-              onChange={(e) => setForm((f) => ({ ...f, group: e.target.value as Project["group"] }))}
-              className="border border-line bg-canvas px-3 py-2"
-            >
-              {GROUPS.map((g) => (
-                <option key={g.value} value={g.value}>
-                  {g.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex flex-col gap-2">
-            <span className="font-display text-sm text-ink-soft">Scope</span>
-            <textarea
-              value={form.scope}
-              onChange={(e) => setForm((f) => ({ ...f, scope: e.target.value }))}
-              className="border border-line bg-canvas px-3 py-2"
-              rows={3}
-            />
-          </label>
-          <div className="grid grid-cols-2 gap-6">
-            <label className="flex flex-col gap-2">
-              <span className="font-display text-sm text-ink-soft">Square feet</span>
-              <input
-                type="number"
-                value={form.sf}
-                onChange={(e) => setForm((f) => ({ ...f, sf: e.target.value }))}
-                className="border border-line bg-canvas px-3 py-2"
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="font-display text-sm text-ink-soft">Year</span>
-              <input
-                type="number"
-                value={form.year}
-                onChange={(e) => setForm((f) => ({ ...f, year: e.target.value }))}
-                className="border border-line bg-canvas px-3 py-2"
-              />
-            </label>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <span className="font-display text-sm text-ink-soft">Images</span>
-            {/* A bare <input type="file"> renders as unstyled system text ("Choose
-                Files" / "No file chosen") that doesn't read as clickable. The
-                input itself can't be restyled directly, so it's visually hidden
-                and a real button-styled label triggers it instead. */}
-            <label
-              aria-disabled={uploading}
-              className="tap-target inline-flex w-fit cursor-pointer items-center justify-center border border-ink px-4 py-2 font-display text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
-            >
-              {uploading ? "Uploading…" : "Choose images"}
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                disabled={uploading}
-                onChange={(e) => onFilesSelected(e.target.files)}
-                className="sr-only"
-              />
-            </label>
-            {form.images.length > 0 && (
-              <ul className="mt-2 space-y-3">
-                {form.images.map((img, i) => (
-                  <li key={img.url} className="flex items-center gap-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.url} alt="" className="h-16 w-16 object-cover" />
-                    <input
-                      type="text"
-                      placeholder="Caption"
-                      value={img.caption}
-                      onChange={(e) => updateCaption(i, e.target.value)}
-                      className="flex-1 border border-line bg-canvas px-3 py-2"
-                    />
-                    <div className="flex gap-1">
-                      <button type="button" onClick={() => moveImage(i, -1)} disabled={i === 0} className="tap-target px-2 disabled:opacity-30">
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveImage(i, 1)}
-                        disabled={i === form.images.length - 1}
-                        className="tap-target px-2 disabled:opacity-30"
-                      >
-                        ↓
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeImage(i)}
-                        className="tap-target px-2 text-sm"
-                        style={{ color: "var(--color-accent)" }}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {form.images[0] ? <p className="text-xs text-ink-soft">First image is the hero.</p> : null}
-          </div>
-
-          {error ? (
-            <p className="text-sm" style={{ color: "var(--color-accent)" }}>
-              {error}
-            </p>
+    <div className="mt-12">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="font-display text-2xl font-medium tracking-[-0.03em]">Projects</h2>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onSeedFromSite}
+            disabled={seeding || isPending}
+            className={secondaryButtonClass}
+          >
+            {seeding ? "Importing…" : "Import from site"}
+          </button>
+          {!formOpen ? (
+            <button type="button" onClick={openForNewProject} className={primaryButtonClass}>
+              Add project
+            </button>
           ) : null}
-
-          <div className="flex items-center gap-4">
-            {/* An underlined text link, matching the public site's link style,
-                read as decoration rather than the form's primary action here --
-                a solid filled button makes it unmistakable. */}
-            <button
-              type="submit"
-              disabled={isPending || uploading}
-              className="tap-target self-start border border-ink bg-ink px-5 py-2 font-display text-sm text-canvas disabled:opacity-50"
-            >
-              {form.id ? "Save changes" : "Add project"}
-            </button>
-            {form.id ? (
-              <button type="button" onClick={resetForm} className="tap-target self-start font-display text-sm text-ink-soft">
-                Cancel
-              </button>
-            ) : null}
-          </div>
-        </form>
-      </section>
-
-      <section>
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <h2 className="font-display text-2xl font-medium tracking-[-0.03em]">Projects</h2>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={onSeedFromSite}
-              disabled={seeding || isPending}
-              className="tap-target border-b border-accent font-display text-sm disabled:opacity-50"
-              style={{ color: "var(--color-accent)" }}
-            >
-              {seeding ? "Importing…" : "Import projects from site"}
-            </button>
-            {seedMessage ? <p className="text-sm text-ink-soft">{seedMessage}</p> : null}
-          </div>
         </div>
-        <div className="mt-8 grid gap-8 md:grid-cols-2">
-          {projects.map((project) => (
-            <div key={project.id} className="border border-line p-4">
-              {project.images?.[0] ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={project.images[0].url} alt="" className="h-40 w-full object-cover" />
-              ) : null}
-              <p className="mt-3 font-display font-medium">{project.address}</p>
-              <p className="text-sm text-ink-soft">
-                {project.area} · {project.group}
-                {project.sf ? ` · ${project.sf} sf` : ""}
-                {project.year ? ` · ${project.year}` : ""}
-              </p>
-              <div className="mt-3 flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => editProject(project)}
-                  className="tap-target border-b border-accent font-display text-sm"
-                  style={{ color: "var(--color-accent)" }}
+      </div>
+      {seedMessage ? <p className="mt-2 text-sm text-ink-soft">{seedMessage}</p> : null}
+
+      {/* The panel's own height animates via the grid-rows 0fr/1fr trick
+          instead of max-height, so it settles at exactly the form's real
+          height with no measurement or magic number, and reduced motion
+          collapses straight to instant per the accessibility rule this
+          dashboard follows. */}
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          formOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="mt-6 rounded-2xl border border-line bg-canvas p-6 shadow-sm">
+            <h3 className="font-display text-lg font-medium tracking-[-0.02em]">
+              {form.id ? "Edit project" : "New project"}
+            </h3>
+            <form onSubmit={onSubmit} className="mt-6 grid max-w-2xl gap-6">
+              <label className="flex flex-col gap-2">
+                <span className="font-display text-sm text-ink-soft">Address</span>
+                <input
+                  type="text"
+                  required
+                  value={form.address}
+                  onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
+                  className={inputClass}
+                />
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="font-display text-sm text-ink-soft">Area</span>
+                <input
+                  type="text"
+                  required
+                  value={form.area}
+                  onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))}
+                  className={inputClass}
+                />
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="font-display text-sm text-ink-soft">Group</span>
+                <select
+                  value={form.group}
+                  onChange={(e) => setForm((f) => ({ ...f, group: e.target.value as Project["group"] }))}
+                  className={inputClass}
                 >
-                  Edit
+                  {GROUPS.map((g) => (
+                    <option key={g.value} value={g.value}>
+                      {g.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-2">
+                <span className="font-display text-sm text-ink-soft">Scope</span>
+                <textarea
+                  value={form.scope}
+                  onChange={(e) => setForm((f) => ({ ...f, scope: e.target.value }))}
+                  className={inputClass}
+                  rows={3}
+                />
+              </label>
+              <div className="grid grid-cols-2 gap-6">
+                <label className="flex flex-col gap-2">
+                  <span className="font-display text-sm text-ink-soft">Square feet</span>
+                  <input
+                    type="number"
+                    value={form.sf}
+                    onChange={(e) => setForm((f) => ({ ...f, sf: e.target.value }))}
+                    className={inputClass}
+                  />
+                </label>
+                <label className="flex flex-col gap-2">
+                  <span className="font-display text-sm text-ink-soft">Year</span>
+                  <input
+                    type="number"
+                    value={form.year}
+                    onChange={(e) => setForm((f) => ({ ...f, year: e.target.value }))}
+                    className={inputClass}
+                  />
+                </label>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <span className="font-display text-sm text-ink-soft">Images</span>
+                {/* A bare <input type="file"> renders as unstyled system text
+                    ("Choose Files" / "No file chosen") that doesn't read as
+                    clickable. The input itself can't be restyled directly, so
+                    it's visually hidden and a real button-styled label
+                    triggers it instead. */}
+                <label
+                  aria-disabled={uploading}
+                  className={`${secondaryButtonClass} w-fit cursor-pointer aria-disabled:cursor-not-allowed`}
+                >
+                  {uploading ? "Uploading…" : "Choose images"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    disabled={uploading}
+                    onChange={(e) => onFilesSelected(e.target.files)}
+                    className="sr-only"
+                  />
+                </label>
+                {form.images.length > 0 && (
+                  <ul className="mt-2 space-y-3">
+                    {form.images.map((img, i) => (
+                      <li
+                        key={img.url}
+                        className="flex items-center gap-3 rounded-xl border border-line p-2"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={img.url} alt="" className="h-16 w-16 rounded-lg object-cover" />
+                        <input
+                          type="text"
+                          placeholder="Caption"
+                          value={img.caption}
+                          onChange={(e) => updateCaption(i, e.target.value)}
+                          className={`${inputClass} flex-1`}
+                        />
+                        <div className="flex gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveImage(i, -1)}
+                            disabled={i === 0}
+                            className={ghostButtonClass}
+                            aria-label="Move image up"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveImage(i, 1)}
+                            disabled={i === form.images.length - 1}
+                            className={ghostButtonClass}
+                            aria-label="Move image down"
+                          >
+                            ↓
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeImage(i)}
+                            className={ghostButtonClass}
+                            style={{ color: "var(--color-accent)" }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {form.images[0] ? <p className="text-xs text-ink-soft">First image is the hero.</p> : null}
+              </div>
+
+              {error ? (
+                <p className="text-sm" style={{ color: "var(--color-accent)" }}>
+                  {error}
+                </p>
+              ) : null}
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={isPending || uploading}
+                  className={primaryButtonClass}
+                >
+                  {form.id ? "Save changes" : "Add project"}
                 </button>
-                <button type="button" onClick={() => onDelete(project.id)} className="tap-target font-display text-sm" style={{ color: "var(--color-accent)" }}>
-                  Delete
+                <button type="button" onClick={closeForm} className={secondaryButtonClass}>
+                  Cancel
                 </button>
               </div>
-            </div>
-          ))}
-          {projects.length === 0 ? <p className="text-ink-soft">No projects yet.</p> : null}
+            </form>
+          </div>
         </div>
-      </section>
+      </div>
+
+      <div className="mt-10 grid gap-6 md:grid-cols-2">
+        {projects.map((project) => (
+          <div key={project.id} className="rounded-2xl border border-line p-4 shadow-sm">
+            {project.images?.[0] ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={project.images[0].url} alt="" className="h-40 w-full rounded-lg object-cover" />
+            ) : null}
+            <p className="mt-3 font-display font-medium">{project.address}</p>
+            <p className="text-sm text-ink-soft">
+              {project.area} · {project.group}
+              {project.sf ? ` · ${project.sf} sf` : ""}
+              {project.year ? ` · ${project.year}` : ""}
+            </p>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() => editProject(project)}
+                className={ghostButtonClass}
+                style={{ color: "var(--color-accent)" }}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => onDelete(project.id)}
+                className={ghostButtonClass}
+                style={{ color: "var(--color-accent)" }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+        {projects.length === 0 ? <p className="text-ink-soft">No projects yet.</p> : null}
+      </div>
     </div>
   );
 }
