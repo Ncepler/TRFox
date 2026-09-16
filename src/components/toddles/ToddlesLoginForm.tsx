@@ -1,4 +1,5 @@
 import { loginAction } from "@/app/toddles/actions";
+import { primaryButtonClass } from "@/lib/buttonStyles";
 
 export default function ToddlesLoginForm({ error }: { error?: boolean }) {
   return (
@@ -17,10 +18,7 @@ export default function ToddlesLoginForm({ error }: { error?: boolean }) {
         />
       </label>
       {error ? <p className="text-sm" style={{ color: "var(--color-accent)" }}>Incorrect password.</p> : null}
-      <button
-        type="submit"
-        className="tap-target inline-flex w-fit items-center justify-center self-start rounded-full bg-ink px-5 py-2.5 font-display text-sm text-canvas transition-transform duration-150 active:scale-[0.97]"
-      >
+      <button type="submit" className={`${primaryButtonClass} w-fit self-start`}>
         Enter
       </button>
     </form>

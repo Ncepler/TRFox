@@ -6,6 +6,7 @@ import BoardPanel from "@/components/BoardPanel";
 import { projects } from "@/data/projects";
 import { press } from "@/data/press";
 import { phone, phoneHref, email, emailHref, foundingYear } from "@/data/firm";
+import { secondaryButtonClass } from "@/lib/buttonStyles";
 
 const siteUrl = "https://trfoxcontracting.com";
 
@@ -149,7 +150,7 @@ export default function Home() {
                 Twenty-three years of interiors, most of them within a few blocks of each other.
               </p>
             </div>
-            <Link href="/projects" className="tap-target font-display text-sm" style={{ color: "var(--color-accent)" }}>
+            <Link href="/projects" className={secondaryButtonClass}>
               All projects
             </Link>
           </div>

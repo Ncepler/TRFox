@@ -10,6 +10,7 @@ import {
   uploadImageAction,
   type ProjectInput,
 } from "@/app/toddles/actions";
+import { ghostButtonClass, primaryButtonClass, secondaryButtonClass } from "@/lib/buttonStyles";
 
 const GROUPS: { value: Project["group"]; label: string }[] = [
   { value: "manhattan", label: "Manhattan" },
@@ -17,20 +18,12 @@ const GROUPS: { value: Project["group"]; label: string }[] = [
   { value: "commercial", label: "Commercial and installations" },
 ];
 
-// A shared vocabulary for this dashboard -- soft corners and real button
-// chrome, not the public site's flat underlined links. See
-// .claude/skills/toddles-dashboard/SKILL.md for the rules these encode.
+// Soft corners and real button chrome, not the public site's flat
+// underlined links -- see .claude/skills/toddles-dashboard/SKILL.md. The
+// button classes themselves live in src/lib/buttonStyles.ts, shared with
+// the public Projects section by explicit design decision.
 const inputClass =
   "w-full rounded-lg border border-line bg-canvas px-3 py-2 text-ink transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
-
-const primaryButtonClass =
-  "tap-target inline-flex items-center justify-center rounded-full bg-ink px-5 py-2.5 font-display text-sm text-canvas transition-transform duration-150 active:scale-[0.97] disabled:opacity-50";
-
-const secondaryButtonClass =
-  "tap-target inline-flex items-center justify-center rounded-full border border-line px-4 py-2 font-display text-sm text-ink transition-[background-color,transform] duration-150 hover:bg-canvas-deep active:scale-[0.97] disabled:opacity-50";
-
-const ghostButtonClass =
-  "tap-target inline-flex items-center justify-center rounded-full px-3 py-1.5 font-display text-sm transition-[background-color,transform] duration-150 hover:bg-canvas-deep active:scale-[0.97] disabled:opacity-30";
 
 type FormState = {
   id?: string;

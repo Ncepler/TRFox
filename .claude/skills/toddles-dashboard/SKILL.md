@@ -6,13 +6,22 @@ description: Visual and interaction rules for the /toddles admin dashboard in th
 # Toddles dashboard design
 
 `/toddles` is the site's internal admin tool, not a public marketing page.
-It follows different rules than the rest of the site on purpose: the public
-pages (governed by `tr-fox-CLAUDE.md`) are deliberately flat -- no shadows,
-no rounded cards, no gradients, links underlined rather than buttoned. That
-restraint is a brand choice for client-facing copy. An admin dashboard has
-no such constraint: its only job is to be unmistakably operable by someone
-who is not a developer. **Never carry these rules onto the public site, and
-never carry the public site's flat-link style onto this dashboard.**
+Most of the rest of the site (governed by `tr-fox-CLAUDE.md`) is deliberately
+flat -- no shadows, no rounded cards, no gradients, links underlined rather
+than buttoned. That restraint is a brand choice for client-facing copy. An
+admin dashboard has no such constraint: its only job is to be unmistakably
+operable by someone who is not a developer.
+
+By explicit, later client decision, the public Projects section (each
+project entry, "View project", "All projects") now shares this same
+button/card language too -- see `tr-fox-CLAUDE.md` section 3's "Explicit
+exception" note and section 5. The three button tiers live in
+`src/lib/buttonStyles.ts` and are imported by both `ToddlesAdmin.tsx` and
+the public `ProjectEntry.tsx` / `ProjectGallery.tsx` / homepage, rather than
+kept as separate copies. **Still never extend this look to any other public
+page** (the hero, "How the work runs", "Published", "Get in touch" all stay
+flat) **without the same kind of explicit direction** -- the Projects
+section is a named exception, not a precedent.
 
 ## Real buttons, not links
 
@@ -33,11 +42,12 @@ shared class strings inside `ToddlesAdmin.tsx`:
   reorder arrows inside a list. Small pill padding, background only on
   hover, so a dense list doesn't turn into a wall of boxes.
 
-All three get press feedback -- `active:scale-[0.97]` with a short
-transition -- because Apple's fluid-interface guidance is explicit that
-feedback belongs on the press, not just the outcome: a button that only
-reacts once the action completes reads as unresponsive in the interval
-between click and result.
+All three get motion on both ends of the interaction, not just one:
+`hover:scale-105` as the cursor finds it, `active:scale-95` as the click
+lands, both on a short `transition-transform`. Apple's fluid-interface
+guidance is explicit that feedback belongs on contact -- press and hover
+alike -- not just the outcome: a button that only reacts once the action
+completes reads as unresponsive in the interval between click and result.
 
 ## Soft corners everywhere, consistently
 

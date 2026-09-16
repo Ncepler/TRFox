@@ -3,7 +3,7 @@ import ProjectGallery from "@/components/ProjectGallery";
 
 export default function ProjectEntry({ project }: { project: Project }) {
   return (
-    <div className="max-w-[62ch]">
+    <div className="max-w-[62ch] rounded-2xl border border-line p-6 shadow-sm">
       <p className="font-display text-xl font-medium tracking-[-0.03em] md:text-2xl">
         {project.address}
         {project.area ? <span className="text-ink-soft">, {project.area}</span> : null}
