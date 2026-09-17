@@ -186,6 +186,8 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
     });
   };
 
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
   const onDelete = (id: string) => {
     startTransition(async () => {
       const result = await deleteProjectAction(id);
@@ -197,6 +199,8 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
       if (form.id === id) closeForm();
     });
   };
+
+  const confirmDeleteProject = confirmDeleteId ? projects.find((p) => p.id === confirmDeleteId) : undefined;
 
   return (
     <div className="mt-12">
@@ -419,9 +423,9 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
               </button>
               <button
                 type="button"
-                onClick={() => onDelete(project.id)}
+                onClick={() => setConfirmDeleteId(project.id)}
                 className={ghostButtonClass}
-                style={{ color: "var(--color-accent)" }}
+                style={{ color: "#B3261E" }}
               >
                 Delete
               </button>
@@ -430,6 +434,48 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
         ))}
         {projects.length === 0 ? <p className="text-ink-soft">No projects yet.</p> : null}
       </div>
+
+      {confirmDeleteProject && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Delete ${confirmDeleteProject.address}?`}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(25,23,20,0.5)" }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setConfirmDeleteId(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setConfirmDeleteId(null);
+          }}
+        >
+          <div className="w-full max-w-sm rounded-2xl border border-line bg-canvas p-6 shadow-sm">
+            <p className="font-display text-lg font-medium">Delete this project?</p>
+            <p className="mt-2 text-sm text-ink-soft">
+              {confirmDeleteProject.address} will be permanently removed. This can&apos;t be undone.
+            </p>
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmDeleteId(null)}
+                className={secondaryButtonClass}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onDelete(confirmDeleteProject.id);
+                  setConfirmDeleteId(null);
+                }}
+                className={`${primaryButtonClass} !bg-[#B3261E]`}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
