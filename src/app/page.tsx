@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ProjectEntry from "@/components/ProjectEntry";
 import BoardPanel from "@/components/BoardPanel";
+import ScrubHero from "@/components/ScrubHero";
 import { projects } from "@/data/projects";
 import { press } from "@/data/press";
 import { phone, phoneHref, email, emailHref, foundingYear } from "@/data/firm";
@@ -67,7 +68,13 @@ export default function Home() {
           photo). On a narrow phone where the text needs more room than
           the photo, it now correctly continues past it onto the plain
           canvas instead of overflowing into the next section. */}
-      <section id="hero" className="relative -mt-20 grid">
+      {/* The scroll-scrubbed cinematic hero opens the page. It carries
+          id="hero", so the nav reads it as the section to stay
+          transparent over; the photo hero below is no longer that
+          section and no longer pulls itself under the nav. */}
+      <ScrubHero />
+
+      <section id="intro" className="relative grid">
         <div className="relative col-start-1 row-start-1 h-[70vh] md:h-screen">
           <picture>
             <source media="(min-width: 768px)" srcSet="/hero-desktop.jpg" />
@@ -83,9 +90,13 @@ export default function Home() {
         </div>
         <div className="relative col-start-1 row-start-1 self-start">
           <div className="mx-auto max-w-5xl px-6 pb-16 pt-10 md:px-10 md:pb-20 md:pt-16">
-            <h1 className="max-w-[20ch] font-display text-4xl font-medium tracking-[-0.03em] text-ink md:text-6xl">
+            {/* h2, not h1: the scroll-scrubbed hero above now carries the
+                page's one h1 (in whichever of its two mutually-exclusive
+                states is showing), so a real heading hierarchy needs this
+                one demoted rather than repeated. */}
+            <h2 className="max-w-[20ch] font-display text-4xl font-medium tracking-[-0.03em] text-ink md:text-6xl">
               T.R. Fox Contracting
-            </h1>
+            </h2>
             <p className="mt-6 max-w-[48ch] text-lg text-ink md:text-xl">
               We work with architects and designers across Manhattan. Most come back for the next
               project.
