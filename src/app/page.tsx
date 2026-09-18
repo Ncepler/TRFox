@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import ProjectEntry from "@/components/ProjectEntry";
 import BoardPanel from "@/components/BoardPanel";
@@ -55,62 +54,10 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
       />
-      {/* Hero. The photo keeps a fixed, sane crop (h-[70vh] mobile, full
-          viewport on desktop) no matter how much text there is -- it never
-          stretches or zooms in to chase the text block's height. Image and
-          text are stacked in the same CSS grid cell rather than overlaid
-          with an absolute position or a negative margin: a grid track
-          sizes to the tallest item in it, so the section's real height is
-          always correct (a negative-margin version of this collapsed to
-          the text's height whenever the photo was taller, e.g. a short
-          headline against a full-viewport desktop photo, which let the
-          next section's opaque background paint over the still-taller
-          photo). On a narrow phone where the text needs more room than
-          the photo, it now correctly continues past it onto the plain
-          canvas instead of overflowing into the next section. */}
       {/* The scroll-scrubbed cinematic hero opens the page. It carries
           id="hero", so the nav reads it as the section to stay
-          transparent over; the photo hero below is no longer that
-          section and no longer pulls itself under the nav. */}
+          transparent over. */}
       <ScrubHero />
-
-      <section id="intro" className="relative grid">
-        <div className="relative col-start-1 row-start-1 h-[70vh] md:h-screen">
-          <picture>
-            <source media="(min-width: 768px)" srcSet="/hero-desktop.jpg" />
-            <Image
-              src="/hero-mobile.jpg"
-              alt="A trowel finishing a plaster wall mid-renovation"
-              fill
-              sizes="100vw"
-              priority
-              className="object-cover"
-            />
-          </picture>
-        </div>
-        <div className="relative col-start-1 row-start-1 self-start">
-          <div className="mx-auto max-w-5xl px-6 pb-16 pt-10 md:px-10 md:pb-20 md:pt-16">
-            {/* h2, not h1: the scroll-scrubbed hero above now carries the
-                page's one h1 (in whichever of its two mutually-exclusive
-                states is showing), so a real heading hierarchy needs this
-                one demoted rather than repeated. */}
-            <h2 className="max-w-[20ch] font-display text-4xl font-medium tracking-[-0.03em] text-ink md:text-6xl">
-              T.R. Fox Contracting
-            </h2>
-            <p className="mt-6 max-w-[48ch] text-lg text-ink md:text-xl">
-              We work with architects and designers across Manhattan. Most come back for the next
-              project.
-            </p>
-            <Link
-              href="/contact"
-              className="tap-target mt-8 inline-block border-b border-accent font-display text-sm"
-              style={{ color: "var(--color-accent)" }}
-            >
-              Start a conversation
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* Step into our work */}
       <section className="border-t border-line">
