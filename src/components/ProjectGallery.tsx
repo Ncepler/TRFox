@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ProjectImage } from "@/data/projects";
+import { secondaryButtonClass } from "@/lib/buttonStyles";
 
 type ProjectGalleryProps = {
   address: string;
@@ -88,13 +89,7 @@ export default function ProjectGallery({ address, images }: ProjectGalleryProps)
 
   return (
     <>
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={openGallery}
-        className="tap-target mt-3 inline-block border-b border-accent font-display text-sm"
-        style={{ color: "var(--color-accent)" }}
-      >
+      <button ref={triggerRef} type="button" onClick={openGallery} className={`${secondaryButtonClass} mt-3`}>
         View project
       </button>
 
@@ -116,10 +111,15 @@ export default function ProjectGallery({ address, images }: ProjectGalleryProps)
             if (e.target === e.currentTarget) close();
           }}
         >
+          {/* A dark-scrim variant of the same pill-button chrome the rest of
+              the site now uses -- the light-mode border/hover tokens in
+              buttonStyles read as invisible against this near-black
+              background, so this one keeps the same shape and motion but
+              spells its own colors in --color-canvas. */}
           <button
             type="button"
             onClick={close}
-            className="tap-target absolute right-4 top-4 z-10 font-display text-sm"
+            className="tap-target absolute right-4 top-4 z-10 rounded-full border border-canvas/40 px-4 py-2 font-display text-sm transition-transform duration-150 hover:scale-105 active:scale-95"
             style={{ color: "var(--color-canvas)" }}
           >
             Close

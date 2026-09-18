@@ -18,6 +18,16 @@ body {
   color: var(--color-ink);
 }
 
+/* The scroll-scrubbed hero adds several absolutely-positioned decorations
+   (scrims, the scroll cue, the brand card). overflow-x: hidden alone still
+   lets script scroll the page sideways; clip is the harder guard, with
+   hidden declared first as the fallback for browsers that lack it. */
+html,
+body {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
 @media (pointer: coarse) {
   /* :not(.hidden) matters: without it this rule's display:inline-flex beats
      Tailwind's .hidden (display:none) on any element carrying both classes,
@@ -66,4 +76,442 @@ body {
       opacity: 1;
     }
   }
+}
+
+/* ============================================================
+   Scroll-scrubbed cinematic hero (src/components/ScrubHero.tsx)
+
+   Built to the 10k-websites engineering standard, adapted from that
+   skill's plain-HTML target into a React client component. Its palette
+   is deliberately its own: the page is a light canvas, but text sitting
+   over live footage has to be warm off-white over a dark scrim, so the
+   hero carries hero-scoped tokens rather than reusing the site's.
+   Hex literals live here, never in the component, per section 3 of
+   tr-fox-CLAUDE.md.
+   ============================================================ */
+
+:root {
+  --hero-ink: #F2EFE9;          /* warm off-white, never pure white */
+  --hero-accent: #C1502C;       /* burnt rust, rare doses only: CTA and one word per headline */
+  --hero-accent-hover: #A84322;
+  --hero-canvas: #141312;       /* near-charcoal behind the stage, never pure black */
+  /* Three layers: a tight edge, a mid glow, a wide falloff. */
+  --hero-tshadow: 0 1px 2px rgba(5, 5, 10, 0.95), 0 3px 12px rgba(5, 5, 10, 0.78),
+    0 10px 44px rgba(5, 5, 10, 0.8);
+}
+
+.scrub-hero {
+  position: relative;
+  background-color: var(--hero-canvas);
+}
+
+.scrub-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--hero-canvas);
+}
+
+.scrub-poster,
+.scrub-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scrub-poster {
+  background-size: cover;
+  background-position: center;
+}
+
+/* Its own compositor layer, so seeking never drags the rest of the page. */
+.scrub-video {
+  opacity: 0;
+  transition: opacity 420ms ease;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.scrub-stage.video-ready .scrub-video {
+  opacity: 1;
+}
+
+.scrub-stage.video-failed .scrub-video {
+  display: none;
+}
+
+/* Layer 1 of the legibility system: one soft darkening over the whole
+   frame, always on, so no frame is ever raw behind the page. */
+.scrub-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 120% 90% at 50% 45%,
+    rgba(5, 5, 10, 0) 35%,
+    rgba(5, 5, 10, 0.5) 100%
+  );
+}
+
+/* The opening brand card. Its scrim sits behind the mark only, so a
+   visitor who never scrolls still sees the room, not a darkened room. */
+.brand-card {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 clamp(20px, 5vw, 64px);
+}
+
+.brand-card::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(1180px, 96vw);
+  height: min(620px, 64vh);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    rgba(10, 10, 10, 0.55) 0%,
+    rgba(10, 10, 10, 0.4) 46%,
+    rgba(10, 10, 10, 0) 74%
+  );
+}
+
+.brand-wordmark {
+  position: relative;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: 0.13em;
+  text-indent: 0.13em; /* balances the trailing letter-space so the mark reads centered */
+  color: var(--hero-ink);
+  text-shadow: var(--hero-tshadow);
+}
+
+.brand-kicker {
+  position: relative;
+  margin: clamp(0.85rem, 1.6vh, 1.35rem) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.66rem, 1vw, 0.8rem);
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  opacity: 0.7;
+  color: var(--hero-ink);
+  text-shadow: var(--hero-tshadow);
+}
+
+/* A band covers the whole stage: its scrim is full-stage, its text sits
+   low and left. One JS-driven opacity rides both, so the footage dims
+   exactly while that band's words are on and nowhere else. */
+.band {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Layer 2: the per-band scrim, deepening with the band's assembly
+   progress. It dies out by 82% so the corners of the room stay live.
+
+   The geometry is measured, not guessed. A first pass used a tighter
+   ellipse (60% by 45%, centred at 20%) and the worst-frame audit failed
+   band 3 at 3.32:1: the text column runs to roughly 56% of the viewport
+   width, so its right end sat out in the gradient's tail at about 0.24
+   effective alpha while the dense core covered only the first word or
+   two. Widening the ellipse and nudging its centre toward the column's
+   own midpoint is what put every band clear of the floor. */
+.band-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: calc(0.25 + 0.75 * var(--k, 1));
+  background: radial-gradient(
+    ellipse 74% 52% at 26% 84%,
+    rgba(5, 5, 10, var(--band-alpha, 0.68)) 0%,
+    rgba(5, 5, 10, calc(var(--band-alpha, 0.68) * 0.78)) 52%,
+    rgba(5, 5, 10, 0) 82%
+  );
+}
+
+.band-text {
+  position: absolute;
+  left: clamp(40px, 5vw, 96px);
+  bottom: clamp(40px, 6vh, 96px);
+  width: min(46rem, 64vw);
+  color: var(--hero-ink);
+  /* Layer 3: the text-shadow token, on every hero band. */
+  text-shadow: var(--hero-tshadow);
+}
+
+/* ch resolves against the font the element itself inherits, so the cap
+   goes on the text elements, never on the container above them. */
+.band-head {
+  margin: 0;
+  max-width: 34ch;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3.2vw, 2.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em; /* large text wants negative tracking */
+}
+
+.band-sub {
+  margin: clamp(0.6rem, 1.2vh, 1rem) 0 0;
+  max-width: 56ch;
+  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+  line-height: 1.45;
+  opacity: 0.82;
+}
+
+.band-em {
+  color: var(--hero-accent);
+}
+
+/* Words and characters are transform targets, so they need to be blocks.
+   Transform and opacity only: nothing here touches layout or filters
+   per frame. */
+.band-head .w,
+.band-head .c {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* (f) Drift-down, band 1: words settle downward, echoing the ceiling
+   closing overhead. */
+.e-drift .w {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.8, 1);
+  opacity: var(--kc);
+  transform: translateY(calc((1 - var(--kc)) * -24px));
+}
+
+/* (c) Blur-to-sharp, band 2: two stacked copies crossfaded by opacity.
+   The soft copy's blur is static; filter is never animated. */
+.e-blur .blur-stack {
+  display: grid;
+}
+
+.e-blur .blur-stack > * {
+  grid-area: 1 / 1;
+}
+
+.e-blur .layer-soft {
+  filter: blur(10px);
+  opacity: calc(1 - var(--k, 0));
+}
+
+.e-blur .layer-sharp {
+  opacity: var(--k, 0);
+}
+
+/* (b) Grid snap-align, band 3: characters slide in left to right in
+   reading order, echoing planks laying down. */
+.e-grid .c {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.6, 1);
+  opacity: var(--kc);
+  transform: translateX(calc((1 - var(--kc)) * var(--jx, 0px)));
+}
+
+/* (a) Scatter, band 4: characters assemble from seeded random offsets,
+   echoing furniture arriving. */
+.e-scatter .c {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 2.6, 1);
+  opacity: var(--kc);
+  transform: translate(calc((1 - var(--kc)) * var(--jx, 0px)), calc((1 - var(--kc)) * var(--jy, 0px)))
+    rotate(calc((1 - var(--kc)) * var(--jr, 0deg)));
+}
+
+/* (e) Word-by-word rise into a staged settle, band 5: the headline rises
+   word by word, then the sub, then the CTA. Three arrivals, one band. */
+.e-rise .w {
+  --kc: clamp(0, (var(--k, 0) - var(--th, 0)) * 3, 1);
+  opacity: var(--kc);
+  transform: translateY(calc((1 - var(--kc)) * 26px));
+}
+
+.e-rise .band-sub {
+  --ks: clamp(0, (var(--k, 0) - 0.66) * 4, 1);
+  opacity: calc(0.82 * var(--ks));
+  transform: translateY(calc((1 - var(--ks)) * 12px));
+}
+
+.e-rise .band-cta {
+  --kb: clamp(0, (var(--k, 0) - 0.78) * 5, 1);
+  opacity: var(--kb);
+  transform: translateY(calc((1 - var(--kb)) * 12px));
+}
+
+.band-cta {
+  margin-top: clamp(1rem, 2.4vh, 1.75rem);
+  pointer-events: none;
+}
+
+.band-cta .hero-btn {
+  pointer-events: auto;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.85rem 1.7rem;
+  background-color: var(--hero-accent);
+  color: var(--hero-ink);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  /* A shadowed label on a button reads as grime. */
+  text-shadow: none;
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+
+.hero-btn:hover {
+  background-color: var(--hero-accent-hover);
+  transform: scale(1.05);
+}
+
+.hero-btn:active {
+  transform: scale(0.95);
+}
+
+/* The honest scroll cue, and the chevron that replaces it if the video
+   never arrives. Both are decoration over a page that already works. */
+.scrub-cue {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(20px, 3.4vh, 34px);
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  color: var(--hero-ink);
+  opacity: 0.75;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+.scrub-stage.cue-gone .scrub-cue {
+  opacity: 0;
+}
+
+.scrub-cue-chevron {
+  animation: scrub-cue-bob 2.8s ease-in-out -0.9s infinite;
+}
+
+@keyframes scrub-cue-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+/* The static hero: a designed layout, not a fallback apology. */
+.static-hero {
+  display: none;
+  position: relative;
+  height: 78vh;
+  min-height: 460px;
+  background-color: var(--hero-canvas);
+  overflow: hidden;
+}
+
+.static-hero-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.static-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 78% 58% at 24% 82%,
+    rgba(5, 5, 10, 0.72) 0%,
+    rgba(5, 5, 10, 0.5) 46%,
+    rgba(5, 5, 10, 0.06) 78%
+  );
+}
+
+.static-hero-text {
+  position: absolute;
+  left: clamp(24px, 6vw, 72px);
+  right: clamp(24px, 6vw, 72px);
+  bottom: clamp(32px, 6vh, 72px);
+  color: var(--hero-ink);
+  text-shadow: var(--hero-tshadow);
+}
+
+/* The five static-hero gates. These five queries are character-for-character
+   identical to the GATES array in ScrubHero.tsx; if one side changes, that
+   side loads assets the other side hides. */
+@media (max-width: 720px), (orientation: portrait) and (max-width: 1024px),
+  (orientation: portrait) and (pointer: coarse),
+  (orientation: landscape) and (pointer: coarse) and (max-height: 560px),
+  (prefers-reduced-motion: reduce) {
+  .scrub-hero {
+    display: none;
+  }
+
+  .static-hero {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrub-cue-chevron {
+    animation: none;
+  }
+
+  .hero-btn {
+    transition: none;
+  }
+
+  .hero-btn:hover,
+  .hero-btn:active {
+    transform: none;
+  }
+}
+
+/* The nav over live footage. Its default is dark ink on a bright photo
+   hero; over the scrub hero's opening frames (raw ceiling joists, dusk
+   glass) that ink disappears. This flips it to the hero's own warm
+   off-white with the same three-layer shadow the captions use, and
+   turns the dark logo into a light one. Only while over a hero that
+   declares itself cinematic, so every other page is untouched. */
+.nav-cinematic {
+  color: var(--hero-ink);
+  text-shadow: var(--hero-tshadow);
+}
+
+.nav-cinematic a,
+.nav-cinematic button {
+  color: var(--hero-ink);
+}
+
+.nav-cinematic img {
+  filter: brightness(0) invert(1) drop-shadow(0 1px 8px rgba(5, 5, 10, 0.85));
+}
+
+/* A short darkening at the very top of the stage, so the nav has
+   something to sit on no matter which frame is showing under it. */
+.scrub-topscrim {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 190px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(5, 5, 10, 0.5) 0%, rgba(5, 5, 10, 0.22) 46%, rgba(5, 5, 10, 0) 100%);
 }

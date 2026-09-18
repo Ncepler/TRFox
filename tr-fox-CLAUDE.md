@@ -105,6 +105,13 @@ notice for the wrong reason.
 Cream canvas with a serif and a terracotta accent. Near-black with acid green. Broadsheet
 hairline brutalism. Identical rounded cards with soft grey shadow.
 
+**Explicit exception, decided directly by the client:** the Projects section (each project
+entry, on the homepage and on `/projects`) and its "View project" / "All projects" controls now
+use soft-cornered cards and real pill buttons -- see section 5 below and
+`src/lib/buttonStyles.ts`. This is a deliberate departure from the flat-link rule everywhere
+else on the public site; do not extend it past the Projects section without the same kind of
+explicit direction.
+
 ---
 
 # 4. Navigation
@@ -132,8 +139,14 @@ disappear on a light patch of the photo, rather than adding a scrim behind the w
 
 # 5. The gallery — the site's one interactive moment
 
-Every project that has real photographs gets a **"View project"** text trigger under its scope
-prose (where the removed dimension line used to sit). Clicking it opens a fullscreen lightbox.
+Every project entry (homepage "Selected work" and the full `/projects` index) sits in a
+soft-cornered card (`rounded-2xl`, a hairline border, a soft shadow) rather than bare text on the
+canvas -- see the "Explicit exception" note in section 3's Banned looks. Every project that has
+real photographs gets a **"View project"** control under its scope prose (where the removed
+dimension line used to sit) styled as a real pill button (`secondaryButtonClass` from
+`src/lib/buttonStyles.ts`), not a text link -- it grows slightly on hover and shrinks slightly on
+press, the same motion every real button on the site now shares. Clicking it opens a fullscreen
+lightbox.
 
 **Lightbox anatomy, top to bottom:**
 1. The current photograph, centered, `object-fit: contain`, on a near-black scrim

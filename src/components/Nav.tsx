@@ -30,13 +30,20 @@ export default function Nav() {
   // right across client-side navigation, since Nav lives in the layout and
   // never remounts.
   const [overHero, setOverHero] = useState(pathname === "/");
+  // A hero that is live footage rather than a bright photo needs the
+  // opposite treatment from this nav's default: the ink logo and links
+  // vanish against dark ceiling joists in the opening frames. The hero
+  // itself declares what it is, so nothing here is hardcoded per page.
+  const [cinematicHero, setCinematicHero] = useState(false);
 
   useIsomorphicLayoutEffect(() => {
     const hero = document.getElementById("hero");
     if (!hero) {
       setOverHero(false);
+      setCinematicHero(false);
       return;
     }
+    setCinematicHero(hero.dataset.cinematic === "true");
 
     // Measure the hero directly, before paint. Navigating back to the home
     // page does not remount Nav, so the useState initializer above does not
@@ -79,7 +86,7 @@ export default function Nav() {
         overHero
           ? "border-b border-transparent bg-transparent"
           : "border-b border-line bg-canvas"
-      }`}
+      } ${overHero && cinematicHero ? "nav-cinematic" : ""}`}
     >
       {/* Pinned to the header's true left edge, independent of the centered
           max-w-5xl container below, so its position doesn't drift with the
