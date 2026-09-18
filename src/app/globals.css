@@ -18,15 +18,6 @@ body {
   color: var(--color-ink);
 }
 
-/* The scroll-scrubbed hero adds several absolutely-positioned decorations
-   (scrims, the scroll cue, the brand card). overflow-x: hidden alone still
-   lets script scroll the page sideways; clip is the harder guard, with
-   hidden declared first as the fallback for browsers that lack it. */
-html,
-body {
-  overflow-x: hidden;
-  overflow-x: clip;
-}
 
 @media (pointer: coarse) {
   /* :not(.hidden) matters: without it this rule's display:inline-flex beats
@@ -103,6 +94,18 @@ body {
 .scrub-hero {
   position: relative;
   background-color: var(--hero-canvas);
+  /* Contains the hero's absolutely-positioned decorations (scrims, the
+     scroll cue, the brand card) so they can't cause horizontal page
+     scroll. This used to live on html/body instead: harmless on
+     desktop, but setting overflow-x without overflow-y on the actual
+     root scroller makes the browser treat the whole page as a nested
+     scroll box rather than the native document scroller, which is
+     exactly the kind of thing iOS Safari mishandles -- and would have
+     killed touch scrolling everywhere, not just here, since it applied
+     to every page. Scoped to this non-scrolling container, the same
+     rule only ever clips its own children. */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .scrub-stage {
