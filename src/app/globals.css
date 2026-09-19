@@ -421,11 +421,24 @@ body {
   }
 }
 
-/* The static hero: a designed layout, not a fallback apology. */
-.static-hero {
+/* The static hero: the same "starts raw, ends finished" journey as the
+   scrub hero, just two crossfading photos instead of a scrubbed video --
+   no decode cost on a phone. The stage pins full-screen (sticky, not
+   fixed, so it still yields to normal document scroll and the browser's
+   own address-bar collapsing) while .static-hero-wrap's extra height
+   supplies the scroll distance to travel through it: nothing to see
+   below until that distance is used up, same as the desktop sticky
+   stage inside its 820vh track. */
+.static-hero-wrap {
   display: none;
   position: relative;
-  height: 78vh;
+  height: 240vh;
+}
+
+.static-hero {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
   min-height: 460px;
   background-color: var(--hero-canvas);
   overflow: hidden;
@@ -436,6 +449,13 @@ body {
   inset: 0;
   background-size: cover;
   background-position: center;
+}
+
+/* The "finished room" layer starts invisible over the raw poster and
+   fades in as the visitor scrolls through the track; opacity is written
+   from JS, delta-gated like every other scroll-driven write here. */
+.static-hero-img-end {
+  opacity: 0;
 }
 
 .static-hero-scrim {
@@ -456,6 +476,10 @@ body {
   bottom: clamp(32px, 6vh, 72px);
   color: var(--hero-ink);
   text-shadow: var(--hero-tshadow);
+  /* Held back until the room is most of the way built, same beat as the
+     desktop hero's own settle band -- the words land once there's
+     something finished for them to sit over. */
+  opacity: 0;
 }
 
 /* The five static-hero gates. These five queries are character-for-character
@@ -469,7 +493,7 @@ body {
     display: none;
   }
 
-  .static-hero {
+  .static-hero-wrap {
     display: block;
   }
 }

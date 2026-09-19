@@ -176,7 +176,10 @@ export default function ScrubHero() {
   const brandRef = useRef<HTMLDivElement>(null);
   const cueRef = useRef<HTMLDivElement>(null);
   const bandRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const staticImgRef = useRef<HTMLDivElement>(null);
+  const staticWrapRef = useRef<HTMLDivElement>(null);
+  const staticStartRef = useRef<HTMLDivElement>(null);
+  const staticEndRef = useRef<HTMLDivElement>(null);
+  const staticTextRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -185,7 +188,10 @@ export default function ScrubHero() {
     const poster = posterRef.current;
     const brand = brandRef.current;
     const cue = cueRef.current;
-    const staticImg = staticImgRef.current;
+    const staticWrap = staticWrapRef.current;
+    const staticStart = staticStartRef.current;
+    const staticEnd = staticEndRef.current;
+    const staticText = staticTextRef.current;
     if (!hero || !stage || !video || !poster || !brand) return;
 
     /* ---------- cached DOM state, so nothing is written twice ---------- */
@@ -385,18 +391,70 @@ export default function ScrubHero() {
     ];
 
     let scrubOn = false;
+    let staticOn = false;
     let staticArmed = false;
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function staticProgress() {
+      if (!staticWrap) return 0;
+      const total = staticWrap.offsetHeight - window.innerHeight;
+      if (total <= 0) return 0;
+      return clamp(-staticWrap.getBoundingClientRect().top / total, 0, 1);
+    }
+
+    const staticCache = { end: -1, text: -1 };
+
+    function onStaticScroll() {
+      const p = staticProgress();
+      // The crossfade doesn't start at scroll zero (there'd be nothing to
+      // scroll through before it began) and finishes with room to spare,
+      // so the finished shot and the words both get a moment to sit still
+      // before the track runs out.
+      const endOp = smoothstep(p, 0.15, 0.85);
+      const textOp = smoothstep(p, 0.55, 0.9);
+      if (staticEnd && Math.abs(endOp - staticCache.end) > 0.004) {
+        staticCache.end = endOp;
+        staticEnd.style.opacity = String(endOp);
+      }
+      if (staticText && Math.abs(textOp - staticCache.text) > 0.004) {
+        staticCache.text = textOp;
+        staticText.style.opacity = String(textOp);
+      }
+    }
 
     function armStatic() {
-      if (staticArmed || !staticImg) return;
+      if (staticArmed || !staticStart || !staticEnd) return;
       staticArmed = true;
       // Set from JS for the same reason the poster is: a background
       // image declared in markup downloads on every visitor, including
       // the desktop ones who never see this layout.
-      staticImg.style.backgroundImage = `url('${ENDING_URL}')`;
+      staticStart.style.backgroundImage = `url('${POSTER_URL}')`;
+      staticEnd.style.backgroundImage = `url('${ENDING_URL}')`;
+    }
+
+    function enableStatic() {
+      if (staticOn) return;
+      staticOn = true;
+      armStatic();
+      if (reducedMotion) {
+        // No scroll-driven motion: land straight on the finished room and
+        // its words, full screen, nothing to animate into place.
+        if (staticEnd) staticEnd.style.opacity = "1";
+        if (staticText) staticText.style.opacity = "1";
+        return;
+      }
+      window.addEventListener("scroll", onStaticScroll, { passive: true });
+      onStaticScroll();
+    }
+
+    function disableStatic() {
+      if (!staticOn) return;
+      staticOn = false;
+      window.removeEventListener("scroll", onStaticScroll);
     }
 
     function enableScrub() {
+      disableStatic();
       if (scrubOn) return;
       scrubOn = true;
       initHeroOnce();
@@ -413,22 +471,22 @@ export default function ScrubHero() {
     }
 
     function disableScrub() {
-      if (!scrubOn) {
-        armStatic();
-        return;
-      }
+      if (!scrubOn) return;
       scrubOn = false;
       window.removeEventListener("scroll", onScroll);
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
         rafId = null;
       }
-      armStatic();
     }
 
     function applyHeroMode() {
-      if (GATES.some((q) => matchMedia(q).matches)) disableScrub();
-      else enableScrub();
+      if (GATES.some((q) => matchMedia(q).matches)) {
+        disableScrub();
+        enableStatic();
+      } else {
+        enableScrub();
+      }
     }
 
     // Keep the query lists referenced: unreferenced ones have
@@ -453,6 +511,7 @@ export default function ScrubHero() {
 
     const onResize = () => {
       if (scrubOn) onScroll();
+      if (staticOn) onStaticScroll();
     };
     window.addEventListener("resize", onResize, { passive: true });
 
@@ -461,6 +520,7 @@ export default function ScrubHero() {
     return () => {
       MQLS.forEach((m) => m.removeEventListener("change", applyHeroMode));
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", onStaticScroll);
       window.removeEventListener("resize", onResize);
       io.disconnect();
       video.removeEventListener("seeked", onSeeked);
@@ -587,21 +647,27 @@ export default function ScrubHero() {
       </div>
 
       {/* The static hero: phones, portrait tablets, sideways phones, and
-          reduced motion. A composed layout over the finished room, not a
-          fallback apology. */}
-      <section className="static-hero -mt-20">
-        <div ref={staticImgRef} className="static-hero-img" aria-hidden="true" />
-        <div className="static-hero-scrim" aria-hidden="true" />
-        <div className="static-hero-text">
-          <h1 className="band-head">TRFOX CONTRACTING</h1>
-          <p className="band-sub">{BANDS[4].sub}</p>
-          <div style={{ marginTop: "1.25rem" }}>
-            <Link href={CTA_HREF} className="tap-target hero-btn">
-              {CTA_LABEL}
-            </Link>
+          reduced motion. Same journey as the scrub hero -- raw shell to
+          finished room -- as two crossfading photos instead of a scrubbed
+          video, pinned full-screen (sticky) so there's nowhere to go
+          until the crossfade finishes. Reduced motion lands directly on
+          the finished frame instead of animating into it. */}
+      <div ref={staticWrapRef} className="static-hero-wrap -mt-20">
+        <section className="static-hero">
+          <div ref={staticStartRef} className="static-hero-img" aria-hidden="true" />
+          <div ref={staticEndRef} className="static-hero-img static-hero-img-end" aria-hidden="true" />
+          <div className="static-hero-scrim" aria-hidden="true" />
+          <div ref={staticTextRef} className="static-hero-text">
+            <h1 className="band-head">TRFOX CONTRACTING</h1>
+            <p className="band-sub">{BANDS[4].sub}</p>
+            <div style={{ marginTop: "1.25rem" }}>
+              <Link href={CTA_HREF} className="tap-target hero-btn">
+                {CTA_LABEL}
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </>
   );
 }
