@@ -379,17 +379,16 @@ export default function ScrubHero() {
       window.setTimeout(start, 4000); // a hung poster never blocks forever
     }
 
-    /* ---------- the five gates, decided live ---------- */
+    /* ---------- the one gate, decided live ---------- */
+    // The scroll-scrubbed video now runs on every viewport, including
+    // phones: the blob-fetch path already downloads the whole (4.7 MB)
+    // file before seeking, so mobile scrubbing has no network-seek
+    // problem to work around. Only reduced-motion still gets the static
+    // crossfade, since that's an accessibility choice, not a device one.
     // Character-for-character identical to the media query block in
     // globals.css. If one side drifts, that side loads assets the
     // other side hides.
-    const GATES = [
-      "(max-width: 720px)",
-      "(orientation: portrait) and (max-width: 1024px)",
-      "(orientation: portrait) and (pointer: coarse)",
-      "(orientation: landscape) and (pointer: coarse) and (max-height: 560px)",
-      "(prefers-reduced-motion: reduce)",
-    ];
+    const GATES = ["(prefers-reduced-motion: reduce)"];
 
     let scrubOn = false;
     let staticOn = false;

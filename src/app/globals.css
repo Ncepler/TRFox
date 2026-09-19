@@ -112,7 +112,14 @@ body {
 .scrub-stage {
   position: sticky;
   top: 0;
+  /* dvh over vh: on a phone, 100vh is measured against the viewport with
+     the browser chrome collapsed, so the sticky stage is taller than what's
+     actually on screen while the address bar is showing. That mismatch is
+     what read as "not scrolling" -- the stage kept eating scroll input to
+     cover its own oversized height before the rest of the page could move.
+     Falls back to vh for browsers that don't support dvh. */
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background-color: var(--hero-canvas);
 }
@@ -124,6 +131,10 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Never the touch/scroll target: with no controls there's nothing to
+     interact with here, and this keeps a phone's scroll gesture landing on
+     the document scroller instead of the media element underneath it. */
+  pointer-events: none;
 }
 
 .scrub-poster {
@@ -500,13 +511,11 @@ body {
   opacity: 0;
 }
 
-/* The five static-hero gates. These five queries are character-for-character
-   identical to the GATES array in ScrubHero.tsx; if one side changes, that
-   side loads assets the other side hides. */
-@media (max-width: 720px), (orientation: portrait) and (max-width: 1024px),
-  (orientation: portrait) and (pointer: coarse),
-  (orientation: landscape) and (pointer: coarse) and (max-height: 560px),
-  (prefers-reduced-motion: reduce) {
+/* The static-hero gate. Character-for-character identical to the GATES
+   array in ScrubHero.tsx; if one side changes, that side loads assets the
+   other side hides. The scroll-scrubbed video runs on every viewport now
+   (phones included); only reduced-motion still gets the static crossfade. */
+@media (prefers-reduced-motion: reduce) {
   .scrub-hero {
     display: none;
   }

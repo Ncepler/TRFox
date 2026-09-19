@@ -3,10 +3,12 @@ import Link from "next/link";
 import ProjectEntry from "@/components/ProjectEntry";
 import BoardPanel from "@/components/BoardPanel";
 import ScrubHero from "@/components/ScrubHero";
-import { projects } from "@/data/projects";
 import { press } from "@/data/press";
 import { phone, phoneHref, email, emailHref, foundingYear } from "@/data/firm";
 import { secondaryButtonClass } from "@/lib/buttonStyles";
+import { readProjects } from "@/lib/blob";
+
+export const dynamic = "force-dynamic";
 
 const siteUrl = "https://trfoxcontracting.com";
 
@@ -43,11 +45,15 @@ const selectedIds = [
   "67th-street",
 ];
 
-const selectedWork = selectedIds
-  .map((id) => projects.find((p) => p.id === id))
-  .filter((p): p is NonNullable<typeof p> => Boolean(p));
+export default async function Home() {
+  // Pulled from Blob storage, same as the /projects page, so any hero
+  // photos added in the admin show up here too. The static data/projects.ts
+  // array never carries images.
+  const projects = await readProjects();
+  const selectedWork = selectedIds
+    .map((id) => projects.find((p) => p.id === id))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
-export default function Home() {
   return (
     <>
       <script
