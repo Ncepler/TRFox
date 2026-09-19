@@ -561,7 +561,7 @@ export default function ScrubHero() {
           <div ref={brandRef} className="brand-card">
             <div>
               <NextImage
-                src="/text-logo.png"
+                src="/text-logo-white.png"
                 alt="TRFox Contracting"
                 width={372}
                 height={218}

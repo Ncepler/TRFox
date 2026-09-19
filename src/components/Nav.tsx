@@ -100,7 +100,7 @@ export default function Nav() {
         }`}
       >
         <Image
-          src="/text-logo.png"
+          src={overHero && cinematicHero ? "/text-logo-white.png" : "/text-logo.png"}
           alt="T.R. Fox Contracting"
           width={140}
           height={32}
