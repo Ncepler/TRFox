@@ -531,10 +531,11 @@ body {
 
 /* The nav over live footage. Its default is dark ink on a bright photo
    hero; over the scrub hero's opening frames (raw ceiling joists, dusk
-   glass) that ink disappears. This flips it to the hero's own warm
-   off-white with the same three-layer shadow the captions use, and
-   turns the dark logo into a light one. Only while over a hero that
-   declares itself cinematic, so every other page is untouched. */
+   glass) that ink disappears. This flips the nav's text to the hero's own
+   warm off-white with the same three-layer shadow the captions use. The
+   logo keeps its own colors always -- only a drop shadow is added here for
+   legibility over dark footage. Only while over a hero that declares
+   itself cinematic, so every other page is untouched. */
 .nav-cinematic {
   color: var(--hero-ink);
   text-shadow: var(--hero-tshadow);
@@ -548,7 +549,7 @@ body {
 }
 
 .nav-cinematic img {
-  filter: brightness(0) invert(1) drop-shadow(0 1px 8px rgba(5, 5, 10, 0.85));
+  filter: drop-shadow(0 1px 8px rgba(5, 5, 10, 0.85));
 }
 
 /* A short darkening at the very top of the stage, so the nav has
