@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import type { Project, ProjectImage } from "@/data/projects";
 import {
   addProjectAction,
@@ -187,20 +187,57 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
   };
 
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
+  // Its own error slot: the general `error` state above only renders
+  // inside the add/edit panel, which is collapsed to zero height whenever
+  // that panel is closed -- exactly when a delete is most likely to be
+  // clicked, so a failed delete was silently swallowing its own message.
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const onDelete = (id: string) => {
+    setDeleteError(null);
+    // Optimistic hide: the project disappears from the list the instant
+    // the delete is confirmed, and stays hidden while the server call is
+    // in flight. A failure below restores it.
+    setHiddenIds((prev) => new Set(prev).add(id));
+    setDeletingId(id);
     startTransition(async () => {
       const result = await deleteProjectAction(id);
       if (!result.ok) {
-        setError(result.message);
+        setHiddenIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+        setDeleteError(result.message);
+        setDeletingId(null);
+        setConfirmDeleteId(null);
         return;
       }
       setProjects(result.projects);
+      setDeletingId(null);
+      setConfirmDeleteId(null);
       if (form.id === id) closeForm();
     });
   };
 
   const confirmDeleteProject = confirmDeleteId ? projects.find((p) => p.id === confirmDeleteId) : undefined;
+  const visibleProjects = projects.filter((p) => !hiddenIds.has(p.id));
+
+  // Escape closes the modal even though nothing inside it is focused by
+  // default -- a keydown handler on the backdrop div only ever fires if
+  // that div itself has focus, which it never does here.
+  useEffect(() => {
+    if (!confirmDeleteId) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && deletingId !== confirmDeleteId) {
+        setConfirmDeleteId(null);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [confirmDeleteId, deletingId]);
 
   return (
     <div className="mt-12">
@@ -399,8 +436,14 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
         </div>
       </div>
 
+      {deleteError ? (
+        <p className="mt-6 text-sm" style={{ color: "var(--color-accent)" }}>
+          {deleteError}
+        </p>
+      ) : null}
+
       <div className="mt-10 grid gap-6 md:grid-cols-2">
-        {projects.map((project) => (
+        {visibleProjects.map((project) => (
           <div key={project.id} className="rounded-2xl border border-line p-4 shadow-sm">
             {project.images?.[0] ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -432,7 +475,7 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
             </div>
           </div>
         ))}
-        {projects.length === 0 ? <p className="text-ink-soft">No projects yet.</p> : null}
+        {visibleProjects.length === 0 ? <p className="text-ink-soft">No projects yet.</p> : null}
       </div>
 
       {confirmDeleteProject && (
@@ -443,34 +486,32 @@ export default function ToddlesAdmin({ initialProjects }: { initialProjects: Pro
           className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           style={{ backgroundColor: "rgba(25,23,20,0.5)" }}
           onClick={(e) => {
-            if (e.target === e.currentTarget) setConfirmDeleteId(null);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setConfirmDeleteId(null);
+            if (e.target === e.currentTarget && deletingId !== confirmDeleteProject.id) {
+              setConfirmDeleteId(null);
+            }
           }}
         >
           <div className="w-full max-w-sm rounded-2xl border border-line bg-canvas p-6 shadow-sm">
-            <p className="font-display text-lg font-medium">Delete this project?</p>
-            <p className="mt-2 text-sm text-ink-soft">
-              {confirmDeleteProject.address} will be permanently removed. This can&apos;t be undone.
+            <p className="font-display text-lg font-medium">
+              Delete &quot;{confirmDeleteProject.address}&quot;?
             </p>
+            <p className="mt-2 text-sm text-ink-soft">This can&apos;t be undone.</p>
             <div className="mt-5 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setConfirmDeleteId(null)}
+                disabled={deletingId === confirmDeleteProject.id}
                 className={secondaryButtonClass}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  onDelete(confirmDeleteProject.id);
-                  setConfirmDeleteId(null);
-                }}
+                onClick={() => onDelete(confirmDeleteProject.id)}
+                disabled={deletingId === confirmDeleteProject.id}
                 className={`${primaryButtonClass} !bg-[#B3261E]`}
               >
-                Delete
+                {deletingId === confirmDeleteProject.id ? "Deleting…" : "Delete"}
               </button>
             </div>
           </div>

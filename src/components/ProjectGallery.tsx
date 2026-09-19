@@ -150,6 +150,40 @@ export default function ProjectGallery({ address, images }: ProjectGalleryProps)
                   onTouchEnd={onTouchEnd}
                   className="absolute inset-y-0 right-0 w-1/3 cursor-e-resize"
                 />
+                <button
+                  type="button"
+                  aria-label="Previous photo"
+                  onClick={prev}
+                  className="tap-target absolute left-2 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-canvas/40 bg-black/30 transition-transform duration-150 hover:scale-105 active:scale-95 md:left-4"
+                  style={{ color: "var(--color-canvas)" }}
+                >
+                  <svg width="14" height="24" viewBox="0 0 14 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M12 2L2 12l10 10"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next photo"
+                  onClick={next}
+                  className="tap-target absolute right-2 top-1/2 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-canvas/40 bg-black/30 transition-transform duration-150 hover:scale-105 active:scale-95 md:right-4"
+                  style={{ color: "var(--color-canvas)" }}
+                >
+                  <svg width="14" height="24" viewBox="0 0 14 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M2 2l10 10L2 22"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
               </>
             )}
           </div>
@@ -178,7 +212,7 @@ export default function ProjectGallery({ address, images }: ProjectGalleryProps)
                   vectorEffect="non-scaling-stroke"
                 />
               </svg>
-              <div className="mx-auto -mt-3 flex max-w-md justify-between">
+              <div className="mx-auto -mt-3 flex max-w-md">
                 {photos.map((_, i) => (
                   <button
                     key={i}
@@ -186,7 +220,7 @@ export default function ProjectGallery({ address, images }: ProjectGalleryProps)
                     aria-label={`Go to photo ${i + 1} of ${photos.length}`}
                     aria-current={i === index}
                     onClick={() => setIndex(i)}
-                    className="tap-target flex h-6 w-6 items-center justify-center"
+                    className="tap-target flex h-10 flex-1 items-center justify-center"
                   >
                     <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
                       <line

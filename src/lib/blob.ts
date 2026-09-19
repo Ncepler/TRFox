@@ -37,5 +37,10 @@ export async function writeProjects(projects: Project[]): Promise<void> {
     access: "public",
     contentType: "application/json",
     addRandomSuffix: false,
+    // @vercel/blob defaults cacheControlMaxAge to one year, meant for
+    // static assets. projects.json changes on every add/edit/delete, so
+    // the CDN in front of blob.url needs to treat it as effectively
+    // uncacheable instead of serving a year-old copy back to readProjects.
+    cacheControlMaxAge: 0,
   });
 }

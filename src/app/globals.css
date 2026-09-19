@@ -89,6 +89,7 @@ body {
   /* Three layers: a tight edge, a mid glow, a wide falloff. */
   --hero-tshadow: 0 1px 2px rgba(5, 5, 10, 0.95), 0 3px 12px rgba(5, 5, 10, 0.78),
     0 10px 44px rgba(5, 5, 10, 0.8);
+  --font-hero: var(--font-archivo), sans-serif;
 }
 
 .scrub-hero {
@@ -200,10 +201,24 @@ body {
   text-shadow: var(--hero-tshadow);
 }
 
+/* Replaces .brand-wordmark: the opening mark is now the logo image
+   itself, sized the way the wordmark it replaces was -- large on
+   desktop, filling most of the width on mobile, never cropped (a fixed
+   intrinsic-ratio next/image with height: auto). */
+.brand-logo {
+  position: relative;
+  display: block;
+  width: clamp(220px, 42vw, 640px);
+  height: auto;
+  margin: 0 auto;
+  filter: drop-shadow(0 1px 2px rgba(5, 5, 10, 0.95)) drop-shadow(0 3px 12px rgba(5, 5, 10, 0.78))
+    drop-shadow(0 10px 44px rgba(5, 5, 10, 0.8));
+}
+
 .brand-kicker {
   position: relative;
   margin: clamp(0.85rem, 1.6vh, 1.35rem) 0 0;
-  font-family: var(--font-display);
+  font-family: var(--font-hero);
   font-size: clamp(0.66rem, 1vw, 0.8rem);
   font-weight: 500;
   letter-spacing: 0.42em;
@@ -261,7 +276,7 @@ body {
 .band-head {
   margin: 0;
   max-width: 34ch;
-  font-family: var(--font-display);
+  font-family: var(--font-hero);
   font-weight: 700;
   font-size: clamp(1.5rem, 3.2vw, 2.75rem);
   line-height: 1.08;
@@ -271,6 +286,7 @@ body {
 .band-sub {
   margin: clamp(0.6rem, 1.2vh, 1rem) 0 0;
   max-width: 56ch;
+  font-family: var(--font-hero);
   font-size: clamp(0.95rem, 1.3vw, 1.15rem);
   line-height: 1.45;
   opacity: 0.82;
@@ -370,7 +386,7 @@ body {
   padding: 0.85rem 1.7rem;
   background-color: var(--hero-accent);
   color: var(--hero-ink);
-  font-family: var(--font-display);
+  font-family: var(--font-hero);
   font-size: 0.95rem;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -522,11 +538,13 @@ body {
 .nav-cinematic {
   color: var(--hero-ink);
   text-shadow: var(--hero-tshadow);
+  font-family: var(--font-hero);
 }
 
 .nav-cinematic a,
 .nav-cinematic button {
   color: var(--hero-ink);
+  font-family: var(--font-hero);
 }
 
 .nav-cinematic img {

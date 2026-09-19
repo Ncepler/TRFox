@@ -1,5 +1,6 @@
 "use client";
 
+import NextImage from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef } from "react";
 
@@ -559,7 +560,14 @@ export default function ScrubHero() {
 
           <div ref={brandRef} className="brand-card">
             <div>
-              <h1 className="brand-wordmark">TRFOX CONTRACTING</h1>
+              <NextImage
+                src="/text-logo.png"
+                alt="TRFox Contracting"
+                width={372}
+                height={218}
+                priority
+                className="brand-logo"
+              />
               <p className="brand-kicker">{KICKER}</p>
             </div>
           </div>

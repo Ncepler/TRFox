@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Schibsted_Grotesk, Newsreader } from "next/font/google";
+import { Schibsted_Grotesk, Newsreader, Archivo } from "next/font/google";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import BackgroundTexture from "@/components/BackgroundTexture";
@@ -16,6 +16,16 @@ const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
   weight: ["300", "400"],
+});
+
+// Scoped to the cinematic hero's opening screen only (see .nav-cinematic,
+// .band-head, .band-sub, .brand-kicker, .hero-btn in globals.css) -- a
+// sturdier grotesque than the site's own display font, closer to the
+// logo's blocky lettering and to a contractor's stenciled signage.
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -35,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${schibstedGrotesk.variable} ${newsreader.variable} font-body antialiased`}>
+      <body className={`${schibstedGrotesk.variable} ${newsreader.variable} ${archivo.variable} font-body antialiased`}>
         <BackgroundTexture />
         <a
           href="#main"

@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { put } from "@vercel/blob";
+import { del, put } from "@vercel/blob";
 import type { Project, ProjectImage } from "@/data/projects";
 import { projects as siteProjects } from "@/data/projects";
 import { assertBlobConfigured, readProjects, writeProjects } from "@/lib/blob";
@@ -102,8 +102,18 @@ export async function deleteProjectAction(id: string): Promise<ProjectsResult> {
   try {
     await requireAuthed();
     const projects = await readProjects();
+    const project = projects.find((p) => p.id === id);
     const updated = projects.filter((p) => p.id !== id);
     await writeProjects(updated);
+    if (project?.images?.length) {
+      try {
+        await del(project.images.map((img) => img.url));
+      } catch {
+        // Best-effort: the entry is already gone from projects.json, which
+        // is the part the user can see, so an orphaned blob here isn't
+        // worth failing the whole delete over.
+      }
+    }
     return { ok: true, projects: updated };
   } catch (err) {
     return { ok: false, message: err instanceof Error ? err.message : String(err) };
