@@ -204,16 +204,16 @@ body {
 /* Replaces .brand-wordmark: the opening mark is now the logo image
    itself, sized the way the wordmark it replaces was -- large on
    desktop, filling most of the width on mobile, never cropped (a fixed
-   intrinsic-ratio next/image with height: auto). Inverted to the same
-   light mark as the nav logo over this hero, for the same reason: the
-   source logo's dark ink disappears against dark footage. */
+   intrinsic-ratio next/image with height: auto). Its own colors are kept
+   as-is (including the gradient divider bar) -- only a drop shadow for
+   legibility over dark footage, no color filter. */
 .brand-logo {
   position: relative;
   display: block;
   width: clamp(220px, 42vw, 640px);
   height: auto;
   margin: 0 auto;
-  filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(5, 5, 10, 0.95))
+  filter: drop-shadow(0 1px 2px rgba(5, 5, 10, 0.95))
     drop-shadow(0 3px 12px rgba(5, 5, 10, 0.78)) drop-shadow(0 10px 44px rgba(5, 5, 10, 0.8));
 }
 
@@ -533,10 +533,12 @@ body {
 
 /* The nav over live footage. Its default is dark ink on a bright photo
    hero; over the scrub hero's opening frames (raw ceiling joists, dusk
-   glass) that ink disappears. This flips it to the hero's own warm
-   off-white with the same three-layer shadow the captions use, and
-   turns the dark logo into a light one. Only while over a hero that
-   declares itself cinematic, so every other page is untouched. */
+   glass) that ink disappears. This flips the nav's text to the hero's own
+   warm off-white with the same three-layer shadow the captions use. The
+   logo keeps its own colors (including its gradient divider bar) --
+   only a drop shadow is added here for legibility over dark footage.
+   Only while over a hero that declares itself cinematic, so every other
+   page is untouched. */
 .nav-cinematic {
   color: var(--hero-ink);
   text-shadow: var(--hero-tshadow);
@@ -550,7 +552,7 @@ body {
 }
 
 .nav-cinematic img {
-  filter: brightness(0) invert(1) drop-shadow(0 1px 8px rgba(5, 5, 10, 0.85));
+  filter: drop-shadow(0 1px 8px rgba(5, 5, 10, 0.85));
 }
 
 /* A short darkening at the very top of the stage, so the nav has
